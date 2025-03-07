@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="overflow-x-hidden">
+      <body>
         <div className="flex h-screen w-screen overflow-hidden">
           <SidebarProvider>
             <div className="flex h-full w-full">
