@@ -1,33 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 
 export default function SignIn() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { user, isLoading } = useUser(); // Get Auth0 user data
 
-  const handleSignIn = () => {
-    setError("");
-    setLoading(true);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+      </div>
+    );
+  }
 
-    setTimeout(() => {
-      if (username.toLowerCase().includes("teacher")) {
-        router.push("/dashboard/teacher");
-      } else if (username.toLowerCase().includes("student")) {
-        router.push("/dashboard/student");
-      } else {
-        setError("Invalid username. Must contain 'teacher' or 'student'.");
-        setLoading(false);
-      }
-    }, 1000); // Simulate API delay
+  // If user is logged in, redirect based on role
+  if (user) {
+    if (user.email.includes("teacher")) {
+      router.push("/dashboard/teacher");
+    } else if (user.email.includes("student")) {
+      router.push("/dashboard/student");
+    } else {
+      router.push("/dashboard");
+    }
+  }
+
+  // Function to initiate Auth0 login
+  const handleAuth0SignIn = () => {
+    router.push("/api/auth/login"); // Redirect to Auth0 login
   };
 
   return (
@@ -37,27 +41,8 @@ export default function SignIn() {
           <CardTitle className="text-center text-xl">Sign In</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col space-y-4">
-          <div className="flex flex-col space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <Button onClick={handleSignIn} disabled={loading} className="w-full">
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              "Sign In"
-            )}
+          <Button onClick={handleAuth0SignIn} className="w-full">
+            Sign In with Auth0
           </Button>
         </CardContent>
       </Card>
