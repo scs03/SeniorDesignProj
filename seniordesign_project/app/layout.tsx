@@ -1,4 +1,6 @@
 // app/layout.tsx
+'use client';
+
 import './globals.css'
 import { ApolloProvider } from '@apollo/client';
 import client from '../lib/apollo-client';

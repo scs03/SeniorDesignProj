@@ -42,11 +42,19 @@ INSTALLED_APPS = [
     'assignments',
     'grades',
     'feedback',
+    'corsheaders',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Your frontend origin
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-MIDDLEWARE = [
+MIDDLEWARE = [        
+    "corsheaders.middleware.CorsMiddleware",  # 👈 Add this on top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

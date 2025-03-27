@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
+import { LOGIN_MUTATION } from "@/services/user_mutations";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,24 +12,48 @@ import { Loader2 } from "lucide-react";
 
 export default function SignIn() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSignIn = () => {
+  // Use Apollo's useMutation hook to call login
+  const [login] = useMutation(LOGIN_MUTATION);
+
+  const handleSignIn = async () => {
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      if (username.toLowerCase().includes("teacher")) {
-        router.push("/dashboard/teacher");
-      } else if (username.toLowerCase().includes("student")) {
-        router.push("/dashboard/student");
+    try {
+      const { data } = await login({
+        variables: {
+          email,
+          password,
+        },
+      });
+
+      if (data?.login) {
+        console.log("Login data:", data.login);
+        const { role } = data.login;
+
+        console.log("Login successful:", role);
+
+        // Redirect based on role
+        if (role.trim() === "teacher") {
+          router.push("/dashboard/teacher");
+        } else if (role.trim().toLowerCase() === "student") {
+          router.push("/dashboard/student");
+        } else {
+          setError("Invalid role.");
+        }
       } else {
-        setError("Invalid username. Must contain 'teacher' or 'student'.");
-        setLoading(false);
+        setError("Invalid email or password. Please try again.");
       }
-    }, 1000); // Simulate API delay
+    } catch (err) {
+      setError("Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,12 +64,24 @@ export default function SignIn() {
         </CardHeader>
         <CardContent className="flex flex-col space-y-4">
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
-              id="username"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 

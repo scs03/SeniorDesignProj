@@ -1,8 +1,13 @@
-// lib/apollo-client.js
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+// lib/apollo-client.ts
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+
+const httpLink = createHttpLink({
+  uri: "http://localhost:8000/graphql",
+  credentials: "include", // Include cookies for session-based auth if needed
+});
 
 const client = new ApolloClient({
-  uri: "http://localhost:8000/graphql", // 🔁 This is your Django backend
+  link: httpLink,
   cache: new InMemoryCache(),
 });
 

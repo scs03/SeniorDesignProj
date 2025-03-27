@@ -1,5 +1,6 @@
 import strawberry
 from accounts.models import CustomUser
+from datetime import datetime
 
 @strawberry.type
 class UserType:
@@ -7,7 +8,7 @@ class UserType:
     name: str
     email: str
     role: str
-    created_at: str
+    created_at: datetime
 
     @staticmethod
     def from_instance(user: CustomUser) -> "UserType":
