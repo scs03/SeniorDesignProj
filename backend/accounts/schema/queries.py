@@ -16,10 +16,3 @@ class Query:
         user = info.context.request.user
         return UserType.from_instance(user)
 
-    @strawberry.field
-    def login(self, email: str, password: str, info: Info) -> bool:
-        try:
-            user = CustomUser.objects.get(email=email)
-            return user.check_password(password)
-        except CustomUser.DoesNotExist:
-            return False
