@@ -5,6 +5,7 @@ from strawberry.tools import merge_types
 from strawberry.schema.config import StrawberryConfig
 from accounts.schema.queries import Query as UserQueries
 from accounts.schema.mutations import Mutation as UserMutations
+from groups.schema.mutations import Mutation as GroupMutations
 
 
 
@@ -14,6 +15,7 @@ queries = (
 
 mutations = (
     UserMutations,
+    GroupMutations, 
 )
 
 # Merge them into full root types
