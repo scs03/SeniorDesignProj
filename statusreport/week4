@@ -1,0 +1,55 @@
+Week: 2/21 - 2/29
+Team leader: Sriram Sendhil
+
+Team member #1: Vikram Ramachandra  
+Total hours worked: 8
+
+Tasks completed:
+Finished making database on django and postgresql
+Can enter data for assignments, grades, feedbacks, and users
+
+Tasks next week:
+Finish working on phase 2 goals
+
+Team member #2: Nihanth Attaluri  
+Total hours worked: 10  
+Tasks completed:  
+    -	Researched into model logistics and input
+	⁃	Code implementation for pdfplumber/pymu/tesseract (text extraction from rubric)
+
+Tasks for next week:  
+  - fine tune text extraction, begin model input testing OR file upload connection to db
+
+
+Team member #3: Saumya Kapoor  
+Total hours worked: ~8
+Tasks completed:  
+  ⁃	Worked on AUTH0 with the backend integration
+  -	Working towards setting up Log out/in buttons (Front end)
+
+Tasks for next week:  
+  - Resolve bugs related to Auth0
+  - Continue to fully integrate front end as per figma model and start connection to DB
+
+Team member #4: Sriram Sendhil  
+Total hours worked: 8ish  
+Tasks completed:  
+  - Worked on pair programming with Saumya to debug and resolve hydration errors in React components, ensuring proper rendering and interactivity.
+Led the integration of Auth0, setting up authentication flow and addressing implementation challenges.
+  - Instead of setting up the full front end with non-functional components, worked on refactoring existing components to dynamically interact with the database in preparation for backend integration.
+
+Tasks for Next Week:
+  - Continue refining Auth0 setup, finalize component adjustments for DB connection, and assist with further frontend optimizations.
+
+Team member #5: Sruti Karthikeyan  
+Total hours worked: ~8  
+Tasks completed:  
+    ⁃    Researched into model logistics and input with nihanth, since pdf extraction might be hard- the rubrics come in table formats in the dataset.
+    ⁃    worked with nihanth for Code implementation for pdfplumber/pymu/tesseract (text extraction from rubric)
+    ⁃    brainstormed the user flow and wrote down the system architecture   
+
+Tasks for next week:  
+  - data incorporation with model to do basic analysis 
+  -  system architecture flow converted into a diagram  
+
+-------------------------------------------------------------------

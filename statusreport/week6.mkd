@@ -1,0 +1,52 @@
+Week: 2/21 - 2/29
+Team leader: Sriram Sendhil
+
+Team member #1: Sriram Sendhil
+Total hours worked: 11
+
+Tasks completed:
+Container-ized backend with docker
+Set up Django and GraphQL back end
+Set up integrations with frontend to backend
+Made Login mutation / currUerInfo query
+Set up login to connect with backend
+
+Tasks next week:
+Continue to integrate more functionality with backend -> frontend
+Add all mutations and queries needed for frontend
+
+
+Vikram Ramachandra
+Hours worked: 10
+
+Tasks completed:
+Users from database can log in on website
+Worked on beautification with Saumya on front end
+
+Tasks next week:
+Continuing integration
+
+Nihanth Attaluri - 10
+
+Tasks Completed:
+	- Researched through new issue and setup a working solution
+	- Pair programmed with Srutito work on new model implementation with OpenAI
+	- Surrounding environment is ready for plug and play with the model once its ready
+
+Tasks next week: Get official scoring model ready and merged
+
+Saumya Kapoor: 10
+	⁃	Pair programming with the team after break
+	⁃	UI beatification
+	⁃	Connected front end and back end registration
+
+Task for next week: 
+	-	Work on integration with front end and backend for other functions 
+
+Sruti Karthikeyan: ~9
+
+- pair programming with Nihanth to understand scores and how to denormalize them to make some sense of the code we had in regards to the output.
+- finetune the model: figured out a flaw: the dataset had varying ranges of scores for different sets which we accidentally mistook as same score, hence working on a new approach of fine tuning each essay set
+- working on another approach of utilizing just a set of data to use a common range and see how the model performs
+
+Task next week: finalize the model and merge with rest of the code
