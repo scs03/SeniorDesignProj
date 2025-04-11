@@ -23,7 +23,7 @@ Added a profile icon for the teacher with Saumya
 Tasks next week: Continue transitioning from hard coded to db based
 
 3. Sriram Sendhil
-Total hours worked: 9~
+Total hours worked: 10
 Tasks done:
     •    Added addStudentsToClass mutation (teacher-only, scoped to their own classes)
     •    Created submitAssignment mutation (student-only, one submission per assignment)
@@ -45,3 +45,13 @@ Tasks next week:
 
   1. Improve scoring reliability by refining training data quality and trait-specific rubric phrasing.
   2. Start working with Nihanth to get rubric parsed information integrated with the model.
+
+5. Nihanth Attaluri
+Hours worked: 10
+Tasks Completed:
+	- Connected base model to hugging face and uploaded it into their inference repository
+	- Tweaked outputs of essay parsing and trait return to fit model input
+	- Setup API route connection to huggingface
+
+Next Week: 
+	Properly pass essay text and trait returns into hugginface
