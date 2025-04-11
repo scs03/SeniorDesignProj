@@ -1,1 +1,47 @@
+1. Saumya Kapoor
+Hours worked: 10
 
+Tasks completed:
+Worked on creating an add assignment button on the teacher submission page.
+
+Allows teacher to add new assignments with details such as assignment name, Rubric submission, and text box for other comments
+
+Added a profile icon for the teacher with vikram. 
+
+Tasks next week: transition to real values 
+
+2. Vikram Ramachandra
+Hours worked: 10
+
+Tasks completed:
+Worked on creating a pop up window for the list of students on the teacher submissions page.
+
+Gives the teacher a better view of all of the students in their class along with their grades.
+
+Added a profile icon for the teacher with Saumya
+
+Tasks next week: Continue transitioning from hard coded to db based
+
+3. Sriram Sendhil
+Total hours worked: 9~
+Tasks done:
+    •    Added addStudentsToClass mutation (teacher-only, scoped to their own classes)
+    •    Created submitAssignment mutation (student-only, one submission per assignment)
+    •    Added myClasses query for students to view their enrolled classes
+    •    Added myAssignments query for students to view assignments across all enrolled classes
+Next week work:
+    •    Integrate with front end code, set up user sessions
+
+4. Sruti Karthikeyan
+Hours worked: 10
+
+Tasks completed:
+
+  1. Finalized a working model pipeline for trait-based essay scoring using the ASAP AES dataset.
+  2. Rebuilt prompts to include detailed rubric descriptions with score-level breakdowns (e.g., what a score of 1–5 means for each trait).
+  3. Retrained the Flan-T5 model using these enriched prompts, resulting in more differentiated predictions between strong and weak essays.
+
+Tasks next week:
+
+  1. Improve scoring reliability by refining training data quality and trait-specific rubric phrasing.
+  2. Start working with Nihanth to get rubric parsed information integrated with the model.
