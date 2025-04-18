@@ -6,11 +6,13 @@ from strawberry.schema.config import StrawberryConfig
 from accounts.schema.queries import Query as UserQueries
 from accounts.schema.mutations import Mutation as UserMutations
 from groups.schema.mutations import Mutation as GroupMutations
+from groups.schema.queries import Query as GroupQueries
 
 
 
 queries = (
     UserQueries,
+    GroupQueries,
 )
 
 mutations = (

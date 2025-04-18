@@ -35,20 +35,18 @@ export default function SignIn() {
       if (data?.login) {
         console.log("Login data:", data.login);
         const { role } = data.login;
-
-        console.log("Login successful:", role);
-
+      
+        // Store session
+        localStorage.setItem("user", JSON.stringify(data.login));
+      
         // Redirect based on role
         if (role.trim() === "teacher") {
-          router.push("/dashboard/teacher");
+          window.location.href = "/dashboard/teacher"
         } else if (role.trim().toLowerCase() === "student") {
-          router.push("/dashboard/student");
-        } else {
-          setError("Invalid role.");
+          window.location.href = "/dashboard/student"
         }
-      } else {
-        setError("Invalid email or password. Please try again.");
       }
+      
     } catch (err) {
       setError("Login failed. Please check your credentials.");
     } finally {
