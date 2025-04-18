@@ -22,6 +22,8 @@ const TeacherHomePage = () => {
           <Card className='w-full '>
             <CardHeader>
               <CardTitle>Class 1.</CardTitle>
+              
+
             </CardHeader>
             <CardContent>
               <p>Card Content</p>
