@@ -1,0 +1,64 @@
+4/18 Status Reports
+
+Vikram Ramachandra
+Hours worked: 10
+
+Tasks Completed:
+- Collaborated with Sriram to implement the integration of teacher-generated queries into the frontend UI, displaying data using card components.
+- Designed and developed a functional Submit Assignment modal on the student submissions page. This feature enables students to upload their assignments and select the appropriate assignment from a dropdown, laying the groundwork for a smoother submission process.
+
+Tasks for Next Week:
+Finalize the full integration of backend data into both the teacher and student views, ensuring the removal of all hardcoded data.
+
+Sriram Sendhil: 10
+- Handled merge conflicts with repo
+- Created useSession hook to wrap up dashboards (protected pages)
+- Handled Hydration errors within useSession hooks
+- Ensured that upon attempt to enter protected pages without signing in -> redirect to signin page
+- Created query to see list of Classes taught by teacher along with assignments and class count
+- Integrated graphQL mutations in the front end for login + logout
+- Worked with Vikram to integrate classes query to front end to have dynamic cards
+- Created logout mutation
+- Integrated logout mutation to frontend and tied it with useSession for seamless functionality
+Next week:
+- set up integrations for creating assignments
+- Finishing integrations with backend for student page
+
+Sruti Karthikeyan
+Hours worked: 10
+Tasks Completed:
+
+1. Identified a key issue with the previous model: generated scores often failed to match rubric intent because the model lacked trait-specific guidance. Researched prompt engineering and rubric-aware input strategies to make scoring more interpretable and aligned with how teachers grade.
+
+2. Explored multiple retraining options using trait-specific rubric prompts to improve zero-shot scoring reliability.
+
+3. Initiated full retraining of the Flan-T5 model using revised prompts that include explicit trait rubrics for each input. Training is being done on Google Colab, which introduces time and resource constraints (e.g., session timeouts, limited GPU memory), making experimentation slower but still feasible.
+
+Next Week:
+
+1. Finalize model training and begin scoring accuracy checks across a sample of essays.
+
+2. Integrate the finalized model into the overall backend pipeline for automated, rubric-driven essay evaluation.
+
+Saumya Kapoor
+Hours worked: 10
+
+Tasks completed:
+
+- Created a submit assignment button in student submission page with vikram
+
+- Working on beautification
+
+- Changed UI to make it more streamlined
+
+Tasks next week:integration with vikram and sriram to connect backend and front end
+
+Nihanth Attaluri
+Hours worked: 10
+Tasks Completed:
+- Testing data flow from essay submissions -> rubric additions
+- Messing with outputs and JSON to feed into model call
+- Worked on a solution to essay scoring issues w/ Sruti
+
+Next Week:
+Add extra layer for essay scoring
