@@ -1,0 +1,52 @@
+Meeting Notes
+Date: April 18th, 2025
+Attendees:
+
+Thennannamalai Malligarjunan
+
+Vikram Rohit Ramachandra
+
+Sruti Karthikeyan
+
+Sriram Sendhil
+
+Saumya Kapoor
+
+Duration: ~45 minutes
+Platform: Microsoft Teams
+
+Discussion Highlights
+Integration with front end and back end. Training the AI model.
+
+This week, Vikram collaborated with Sriram to implement the integration of teacher-generated queries into the frontend, 
+displaying dynamic data through card components. He also designed and developed a functional "Submit Assignment" modal 
+on the student submissions page, allowing students to upload assignments and select the relevant task from a dropdown. 
+This lays the foundation for a more streamlined submission process. Next week, he plans to finalize backend data integration
+for both teacher and student views, removing all hardcoded data.
+
+Sriram addressed merge conflicts in the repository and developed a useSession hook to manage protected dashboard pages, 
+resolving hydration errors in the process. He ensured that users attempting to access protected pages without authentication
+are redirected to the sign-in page. Additionally, he created queries to fetch the list of classes taught by a teacher, 
+including related assignments and class counts. Sriram also integrated GraphQL mutations for login and logout functionalities
+and worked alongside Vikram to display the classes dynamically using cards in the frontend. Next week, he will focus on setting
+up integrations for assignment creation and finalizing backend connections on the student page.
+
+Sruti identified a significant issue in the scoring model: the generated scores often failed to align with rubric intent due to a
+lack of trait-specific guidance. She explored prompt engineering and rubric-aware input strategies to enhance interpretability and
+grading alignment. She also investigated retraining approaches using trait-specific rubric prompts and initiated a full retraining
+of the Flan-T5 model with these revised inputs. The training, conducted on Google Colab, is limited by session and resource
+constraints but remains feasible. Next week, she aims to complete model training, validate scoring accuracy across sample essays,
+and begin integration into the backend for automated, rubric-based evaluation.
+
+Saumya worked with Vikram to create a submit assignment button on the student submissions page and focused on UI beautification
+efforts to streamline the interface. For the upcoming week, he plans to collaborate with Vikram and Sriram to complete backend and
+frontend integration for a seamless submission workflow.
+
+Nihanth spent the week testing the data flow from essay submissions to rubric incorporation, manipulating outputs and JSON structures
+to interface correctly with the model. He also collaborated with Sruti to address issues in essay scoring. For next week, his focus will
+be on adding an additional layer to enhance the essay scoring process.
+
+
+
+
+
