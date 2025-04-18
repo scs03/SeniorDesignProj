@@ -64,3 +64,91 @@ class Mutation:
             teacher=user
         )
         return new_class
+
+    @strawberry.mutation
+    def add_students_to_class(
+        self,
+        info: Info,
+        class_id: int,
+        student_ids: list[int]
+    ) -> str:
+        user: CustomUser = info.context.request.user
+
+        if not user.is_authenticated or user.role != 'teacher':
+            raise Exception("Only teachers can add students to classes.")
+
+        try:
+            class_obj = Class.objects.get(id=class_id, teacher=user)
+        except Class.DoesNotExist:
+            raise Exception("Class not found or not owned by you.")
+
+        students = CustomUser.objects.filter(user_id__in=student_ids, role='student')
+        if not students.exists():
+            raise Exception("No valid student IDs found.")
+
+        class_obj.students.add(*students)
+
+        return f"Added {students.count()} student(s) to class '{class_obj.name}'"
+
+
+    @strawberry.mutation
+    def submit_assignment(
+        self,
+        info: Info,
+        assignment_id: int,
+        submission_file: str  # or Upload if you're doing files
+    ) -> str:
+        user: CustomUser = info.context.request.user
+
+        if not user.is_authenticated or user.role != 'student':
+            raise Exception("Only authenticated students can submit assignments.")
+
+        try:
+            assignment = Assignment.objects.get(id=assignment_id)
+        except Assignment.DoesNotExist:
+            raise Exception("Assignment not found.")
+
+        # Prevent duplicate submissions (optional)
+        existing = Submission.objects.filter(assignment=assignment, student=user).first()
+        if existing:
+            raise Exception("You have already submitted this assignment.")
+
+        Submission.objects.create(
+            assignment=assignment,
+            student=user,
+            submission_file=submission_file
+        )
+
+        return f"Assignment '{assignment.name}' submitted successfully."
+
+    @strawberry.field
+    def my_classes(self, info: Info) -> list["ClassType"]:
+        user: CustomUser = info.context.request.user
+
+        if not user.is_authenticated or user.role != 'student':
+            raise Exception("Only authenticated students can view their enrolled classes.")
+
+        return list(user.enrolled_classes.all())
+    
+    @strawberry.field
+    def my_created_classes(self, info: Info) -> list["ClassType"]:
+        user: CustomUser = info.context.request.user
+
+        if not user.is_authenticated or user.role != 'teacher':
+            raise Exception("Only teachers can view their created classes.")
+
+        return list(user.classes.all())  # from related_name='classes' on teacher FK
+
+    # @strawberry.field
+    # def my_assignments(self, info: Info) -> list["AssignmentType"]:
+    #     user: CustomUser = info.context.request.user
+
+    #     if not user.is_authenticated or user.role != 'student':
+    #         raise Exception("Only authenticated students can view their assignments.")
+
+    #     assignments = Assignment.objects.filter(
+    #         class_assigned__in=user.enrolled_classes.all()
+    #     ).order_by("due_date")
+
+    #     return list(assignments)
+
