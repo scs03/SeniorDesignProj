@@ -2,6 +2,8 @@ import strawberry
 from accounts.schema.types import UserType
 from accounts.models import CustomUser
 from typing import Optional
+from strawberry.types import Info
+
 
 @strawberry.type
 class Mutation:
@@ -24,3 +26,14 @@ class Mutation:
                 )
         except CustomUser.DoesNotExist:
             return None
+
+
+    @strawberry.mutation
+    def logout(self, info: Info) -> bool:
+        request = info.context["request"]
+        
+        if "user" in request.session:
+            del request.session["user"]
+        request.session.flush()  # clears the session completely
+        
+        return True

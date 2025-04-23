@@ -1,47 +1,36 @@
-'use client'
+// app/dashboard/layout.tsx (do NOT add 'use client')
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/app/components/AppSidebar";
+import AuthWrapper from "@/components/AuthWrapper"; // will create this
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useSession } from "@/hooks/useSession"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/app/components/AppSidebar"
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const user = useSession()
-  const router = useRouter()
-  const [isClient, setIsClient] = useState(false)
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Teacher Dashboard",
+};
 
-  useEffect(() => {
-    setIsClient(true) // Ensure client-side only
-  }, [])
-
-  useEffect(() => {
-    if (isClient && !user) {
-      router.push("/auth/signin")
-    }
-  }, [isClient, user, router])
-
-  if (!isClient || !user) {
-    return null // optional: show spinner while checking session
-  }
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-screen overflow-hidden">
-        <div className="flex h-full w-full">
-          <AppSidebar />
-          <main className="flex-1 overflow-auto">
-            <div className="relative">
-              <SidebarTrigger className="absolute top-4 left-4 z-10" />
-              <div className="w-full pt-16">{children}</div>
-            </div>
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
-  )
+      <body>
+        <AuthWrapper>
+          <div className="flex h-screen w-screen overflow-hidden">
+            <SidebarProvider>
+              <div className="flex h-full w-full">
+                <AppSidebar />
+                <main className="flex-1 overflow-auto">
+                  <div className="relative">
+                    <SidebarTrigger className="absolute top-4 left-4 z-10" />
+                    <div className="w-full pt-16">{children}</div>
+                  </div>
+                </main>
+              </div>
+            </SidebarProvider>
+          </div>
+        </AuthWrapper>
+      </body>
+  );
 }
