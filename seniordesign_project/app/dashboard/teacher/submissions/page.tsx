@@ -149,7 +149,6 @@ const TeacherSubmissions = () => {
                     })}
                   </ul>
 
-                  {/* Students Button */}
                   <button
                     onClick={() => setStudentModalIndex(index)}
                     className="mt-3 text-sm text-blue-600 underline hover:text-blue-800"
@@ -169,59 +168,15 @@ const TeacherSubmissions = () => {
   const completedAssignments = assignmentsData.filter((a) => a.status === "Completed");
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full bg-teal-100 min-h-screen">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Class 1 - Teacher View</h1>
-        <button
-          className="text-blue-600 font-semibold hover:underline"
-          onClick={() => setIsModalOpen(true)}
-        >
-          + Add Assignment
-        </button>
+        
       </div>
 
-      {/* Add Assignment Modal */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">New Assignment</h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-black text-xl"
-              >
-                ✕
-              </button>
-            </div>
+      
 
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Type here..."
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-                Add rubric
-              </button>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-                Assignment Name
-              </button>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-                Class Name
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Student List Modal */}
+      {/* Student Modal */}
       {studentModalIndex !== null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
@@ -272,14 +227,14 @@ const TeacherSubmissions = () => {
       )}
 
       {/* Assignment Cards */}
-      <Card className="w-full bg-slate-300">
+      <Card className="w-full" style={{ backgroundColor: "#129490" }}>
         <CardContent className="space-y-6">
           <div>
-            <h2 className="text-lg font-bold mb-2">In Progress</h2>
+            <h2 className="text-lg font-bold mb-2 text-white">In Progress</h2>
             {renderAssignmentCards(pendingAssignments)}
           </div>
           <div>
-            <h2 className="text-lg font-bold mt-6 mb-2">Completed</h2>
+            <h2 className="text-lg font-bold mt-6 mb-2 text-white">Completed</h2>
             {renderAssignmentCards(completedAssignments)}
           </div>
         </CardContent>

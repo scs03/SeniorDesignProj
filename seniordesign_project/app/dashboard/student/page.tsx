@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -6,20 +6,21 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
 const StudentHomePage = () => {
   return (
-    <div className='p-4 w-full '>
-      <Card className='w-full bg-slate-300'>
+    // Right-hand side main content with teal background
+    <div className="p-4 w-full bg-teal-100 min-h-screen">
+      <Card className="w-full" style={{ backgroundColor: "#129490" }}>
         <CardHeader>
-          <CardTitle>Class 1.</CardTitle>
-          <CardDescription>Dr. Alagar</CardDescription>
+          <CardTitle className="text-white">Class 1.</CardTitle>
+          <CardDescription className="text-white">Dr. Alagar</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Card Content</p>
+          <p className="text-white">Card Content</p>
 
-          <Card className='w-full '>
+          <Card className="w-full bg-white">
             <CardHeader>
               <CardTitle>Class 1.</CardTitle>
             </CardHeader>
@@ -27,11 +28,11 @@ const StudentHomePage = () => {
               <p>Card Content</p>
             </CardContent>
           </Card>
-
+          
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default StudentHomePage
+export default StudentHomePage;

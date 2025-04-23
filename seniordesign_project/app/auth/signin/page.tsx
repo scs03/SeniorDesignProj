@@ -17,7 +17,6 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Use Apollo's useMutation hook to call login
   const [login] = useMutation(LOGIN_MUTATION);
 
   const handleSignIn = async () => {
@@ -33,12 +32,7 @@ export default function SignIn() {
       });
 
       if (data?.login) {
-        console.log("Login data:", data.login);
         const { role } = data.login;
-
-        console.log("Login successful:", role);
-
-        // Redirect based on role
         if (role.trim() === "teacher") {
           router.push("/dashboard/teacher");
         } else if (role.trim().toLowerCase() === "student") {
@@ -57,8 +51,15 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-[400px] shadow-lg">
+    <div className="relative flex items-center justify-center min-h-screen bg-teal-100 overflow-hidden">
+      {/* Decorative white circles */}
+      <div className="absolute w-72 h-72 bg-white opacity-90 rounded-full -top-16 -left-16"></div>
+      <div className="absolute w-40 h-40 bg-white opacity-80 rounded-full bottom-10 right-10"></div>
+      <div className="absolute w-32 h-32 bg-white opacity-85 rounded-full top-24 right-32"></div>
+
+
+      {/* Sign-in card */}
+      <Card className="w-[400px] shadow-lg z-10">
         <CardHeader>
           <CardTitle className="text-center text-xl">Sign In</CardTitle>
         </CardHeader>
