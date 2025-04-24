@@ -7,6 +7,9 @@ from accounts.models import CustomUser
 from strawberry.types import Info
 from groups.schema.types import ClassType
 from django.utils.timezone import now
+from django.utils.timezone import is_naive, make_aware, now
+
+
 
 
 @strawberry.type
@@ -14,15 +17,15 @@ class Mutation:
     @strawberry.mutation
     def create_assignment(
         self,
-        info,
+        info: Info,
         class_id: int,
         name: str,
-        rubric_image: Optional[Upload] = None,  
         due_date: Optional[datetime] = None,
         prompt: Optional[str] = None,
+        rubric_image: Optional[Upload] = None,
     ) -> str:
         request = info.context.request
-        user: CustomUser = request.user
+        user = request.user
 
         if not user.is_authenticated or user.role != "teacher":
             raise Exception("Only teachers can create assignments.")
@@ -32,24 +35,26 @@ class Mutation:
         except Class.DoesNotExist:
             raise Exception("This class does not exist or you are not the assigned teacher.")
 
-        # Set default due_date to next-day midnight if not provided
-        if due_date is None:
-            now_dt = now()
-            next_day = now_dt + timedelta(days=1)
-            due_date = next_day.replace(hour=0, minute=0, second=0, microsecond=0)
+        now_dt = now()
 
-        if due_date < now():
+        if due_date is None:
+            due_date = now_dt + timedelta(days=1)
+            due_date = due_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif is_naive(due_date):
+            due_date = make_aware(due_date)
+
+        if due_date < now_dt:
             raise Exception("Due date must be in the future.")
 
-        assignment = Assignment.objects.create(
+        Assignment.objects.create(
             class_assigned=class_obj,
             name=name,
             due_date=due_date,
+            prompt=prompt,
             rubric_image=rubric_image,
-            prompt=prompt
         )
 
-        return f"Assignment '{assignment.name}' created successfully."
+        return f"Assignment '{name}' created successfully."
 
 
     @strawberry.mutation
