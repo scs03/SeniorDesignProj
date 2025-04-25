@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card"
 import { useQuery, useMutation } from '@apollo/client'
 import { GET_TEACHER_CLASSES } from '@/services/user_queries'
-import { CREATE_ASSIGNMENT } from '@/services/user_mutations'
+import { CREATE_ASSIGNMENT, ADD_STUDENTS_TO_CLASS } from '@/services/user_mutations'
 import { useSession } from '@/hooks/useSession'
 import { GetTeacherClassesData, GetTeacherClassesVars } from '@/services/types'
 import {
@@ -33,6 +33,9 @@ const TeacherHomePage = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [form, setForm] = useState({ classId: '', name: '', dueDate: '', prompt: '' })
   const [createAssignment] = useMutation(CREATE_ASSIGNMENT)
+  const [addStudents] = useMutation(ADD_STUDENTS_TO_CLASS)
+  const [studentDialogOpenId, setStudentDialogOpenId] = useState<number | null>(null)
+  const [studentIdInput, setStudentIdInput] = useState('')
 
   const { data, loading, error, refetch } = useQuery<GetTeacherClassesData, GetTeacherClassesVars>(
     GET_TEACHER_CLASSES,
@@ -59,6 +62,19 @@ const TeacherHomePage = () => {
     refetch()
   }
 
+  const handleStudentSubmit = async () => {
+    if (!studentDialogOpenId || !studentIdInput) return
+    await addStudents({
+      variables: {
+        classId: studentDialogOpenId,
+        studentIds: [parseInt(studentIdInput, 10)],
+      },
+    })
+    setStudentIdInput('')
+    setStudentDialogOpenId(null)
+    refetch()
+  }
+
   if (loading) return (
     <div className="p-8 text-center">
       <div className="animate-pulse flex flex-col items-center justify-center">
@@ -67,7 +83,7 @@ const TeacherHomePage = () => {
       </div>
     </div>
   )
-  
+
   if (error) return (
     <div className="p-8 text-center">
       <div className="flex flex-col items-center justify-center">
@@ -160,19 +176,42 @@ const TeacherHomePage = () => {
         {data?.teacher_classes.map(classItem => (
           <Card key={classItem.id} className="w-full bg-white border-blue-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
             <CardHeader className="bg-gradient-to-r from-blue-100 to-blue-50 border-b border-blue-100">
-              <div className="flex items-center">
-                <div className="mr-4 bg-blue-100 p-2 rounded-full">
-                  <BookOpen className="h-6 w-6 text-blue-600" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="mr-4 bg-blue-100 p-2 rounded-full">
+                    <BookOpen className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-blue-800">{classItem.name}</CardTitle>
+                    <CardDescription className="flex items-center text-blue-600">
+                      <span className="flex items-center mr-3">
+                        <Users className="h-4 w-4 mr-1" /> {classItem.student_count} Students
+                      </span>
+                      <span className="text-blue-500">ID: {classItem.id}</span>
+                    </CardDescription>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle className="text-lg font-semibold text-blue-800">{classItem.name}</CardTitle>
-                  <CardDescription className="flex items-center text-blue-600">
-                    <span className="flex items-center mr-3">
-                      <Users className="h-4 w-4 mr-1" /> {classItem.student_count} Students
-                    </span>
-                    <span className="text-blue-500">ID: {classItem.id}</span>
-                  </CardDescription>
-                </div>
+                <Dialog open={studentDialogOpenId === Number(classItem.id)} onOpenChange={(open) => setStudentDialogOpenId(open ? Number(classItem.id) : null)}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" variant="outline">Add Student</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Student to {classItem.name}</DialogTitle>
+                      <DialogDescription>Enter a student ID to add them to this class.</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Label>Student ID</Label>
+                      <Input
+                        type="number"
+                        value={studentIdInput}
+                        onChange={(e) => setStudentIdInput(e.target.value)}
+                        placeholder="Enter student ID"
+                      />
+                      <Button onClick={handleStudentSubmit}>Add Student</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardHeader>
 
@@ -209,7 +248,7 @@ const TeacherHomePage = () => {
                 </div>
               )}
             </CardContent>
-            
+
             <CardFooter className="bg-blue-50 py-2 px-4 border-t border-blue-100">
               <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 text-sm w-full">
                 View Details

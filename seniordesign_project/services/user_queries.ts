@@ -25,4 +25,16 @@ export const GET_TEACHER_CLASSES = gql`
   }
 `;
 
+export const GET_ALL_SUBMISSIONS = gql`
+  query {
+    all_submissions {
+      submission_id
+      student_id
+      student_name
+      assignment_id
+      class_id
+    }
+  }
+`;
+
 

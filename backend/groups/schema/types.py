@@ -19,3 +19,13 @@ class ClassType:
     teacher: UserType
     assignments: List[AssignmentType]
     student_count: int 
+
+
+@strawberry.type
+class SubmissionMeta:
+    submission_id: int
+    student_id: int
+    student_name: str
+    assignment_id: int
+    class_id: int
+    

@@ -3,8 +3,10 @@ from typing import List
 from strawberry.types import Info
 
 from groups.models import Class as ClassModel
-from groups.schema.types import ClassType, AssignmentType
+from groups.models import Submission
+from groups.schema.types import ClassType, AssignmentType, SubmissionMeta
 from accounts.schema.types import UserType
+
 
 
 @strawberry.type
@@ -39,4 +41,28 @@ class Query:
                 student_count=c.students.count(),  # 🔥 Count students here
             )
             for c in classes
+        ]
+
+    @strawberry.field
+    def all_submissions(self, info: Info) -> List[SubmissionMeta]:
+        user = info.context.request.user
+
+        if not user.is_authenticated or user.role != "teacher":
+            raise Exception("Only teachers can view all submissions.")
+
+        submissions = Submission.objects.select_related(
+            "student", "assignment", "assignment__class_assigned"
+        ).filter(
+            assignment__class_assigned__teacher=user
+        )
+
+        return [
+            SubmissionMeta(
+                submission_id=sub.id,
+                student_id=sub.student.user_id,
+                student_name=sub.student.name,
+                assignment_id=sub.assignment.id,
+                class_id=sub.assignment.class_assigned.id,
+            )
+            for sub in submissions
         ]
