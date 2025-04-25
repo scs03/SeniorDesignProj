@@ -1,75 +1,94 @@
-import React from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { CircleCheckBig} from "lucide-react"
+"use client";
 
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const assignments = [
-    {
-        title: "Analysis of Lord of the Flies",
-        assignedDate: "Feb 1, 25",
-        dueDate: "Feb 10, 25",
-        status: "Pending",
-        grade: "-"
-    },
-    {
-        title: "Macbeth Character Study",
-        assignedDate: "Feb 5, 25",
-        dueDate: "Feb 15, 25",
-        status: "Completed",
-        grade: "23/25"
-    },
-    {
-        title: "To Kill a Mockingbird Essay",
-        assignedDate: "Feb 10, 25",
-        dueDate: "Feb 20, 25",
-        status: "Pending",
-        grade: "-"
-    },
-  ];
-  
+const TestUploadPage = () => {
+  const [assignmentId, setAssignmentId] = useState("10");
+  const [file, setFile] = useState<File | null>(null);
+  const [message, setMessage] = useState("");
 
-const Submissions = () => {
+  const handleUpload = async () => {
+    if (!file) return;
+
+    const formData = new FormData();
+
+    const operations = JSON.stringify({
+      query: `
+        mutation SubmitAssignment($assignment_id: Int!, $submission_file: Upload!) {
+          submit_assignment(assignment_id: $assignment_id, submission_file: $submission_file)
+        }
+      `,
+      variables: {
+        assignment_id: parseInt(assignmentId, 10),
+        submission_file: null,
+      },
+    });
+
+    const map = JSON.stringify({
+      "0": ["variables.submission_file"],
+    });
+
+    formData.append("operations", operations);
+    formData.append("map", map);
+    formData.append("0", file);
+
+    try {
+      const res = await fetch("http://localhost:8000/graphql", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+
+      const json = await res.json();
+      if (json.errors) {
+        console.error(json.errors);
+        setMessage("Upload failed.");
+      } else {
+        setMessage("Upload successful!");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Upload failed.");
+    }
+  };
+
   return (
-    <div className='p-4 w-full '>
-      <Card className='w-full bg-slate-300'>
-        <CardHeader>
-          <CardTitle>Class 1.</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="p-6 max-w-xl mx-auto space-y-4">
+      <h1 className="text-2xl font-bold">Test Assignment Upload</h1>
 
-        <div className="grid grid-cols-5 bg-gray-200 p-3 rounded-md font-semibold">
-        <p>Title</p>
-        <p>Due</p>
-        <p>Submitted</p>
-        <p className=''>Grade</p>
-        <p> </p>
+      <div className="space-y-2">
+        <Label htmlFor="assignmentId">Assignment ID</Label>
+        <Input
+          id="assignmentId"
+          type="number"
+          value={assignmentId}
+          onChange={(e) => setAssignmentId(e.target.value)}
+        />
       </div>
 
-      {/* Table Rows as Cards */}
-      {assignments.map((assignment, index) => (
-        <Card key={index} className="w-full p-4 my-2">
-          <CardContent className="grid grid-cols-5 items-center">
-            <CardTitle>{assignment.title}</CardTitle>
-            <p className='text-sm'>{assignment.assignedDate}</p>
-            <p className='text-sm'>{assignment.dueDate}</p>
-            <p className='text-sm'>{assignment.grade}</p>
-            <CircleCheckBig className={assignment.status === "Completed" ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}></CircleCheckBig>
-          </CardContent>
-        </Card>
-      ))}
+      <div className="space-y-2">
+        <Label htmlFor="file">Upload File</Label>
+        <Input
+          id="file"
+          type="file"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+      </div>
 
+      <Button
+        onClick={handleUpload}
+        disabled={!file || !assignmentId}
+        className="bg-blue-600 hover:bg-blue-700 text-white"
+      >
+        Submit Assignment
+      </Button>
 
-        </CardContent>
-      </Card>
+      {message && <p className="text-sm mt-2">{message}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default Submissions
+export default TestUploadPage;

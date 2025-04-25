@@ -2,12 +2,15 @@ import strawberry
 from typing import Optional
 from datetime import datetime, timedelta
 from strawberry.file_uploads import Upload
-from groups.models import Assignment, Class
+from groups.models import Assignment, Class, Submission
 from accounts.models import CustomUser
 from strawberry.types import Info
 from groups.schema.types import ClassType
 from django.utils.timezone import now
 from django.utils.timezone import is_naive, make_aware, now
+import os
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 
 
@@ -97,34 +100,31 @@ class Mutation:
 
 
     @strawberry.mutation
-    def submit_assignment(
-        self,
-        info: Info,
-        assignment_id: int,
-        submission_file: str  # or Upload if you're doing files
-    ) -> str:
-        user: CustomUser = info.context.request.user
+    def submit_assignment(self, info: Info, assignment_id: int, submission_file: Upload) -> str:
+        request = info.context.request
+        user: CustomUser = request.user
 
-        if not user.is_authenticated or user.role != 'student':
-            raise Exception("Only authenticated students can submit assignments.")
+        if not user.is_authenticated or user.role != "student":
+            raise Exception("Only students can submit assignments.")
 
         try:
             assignment = Assignment.objects.get(id=assignment_id)
         except Assignment.DoesNotExist:
             raise Exception("Assignment not found.")
 
-        # Prevent duplicate submissions (optional)
-        existing = Submission.objects.filter(assignment=assignment, student=user).first()
-        if existing:
-            raise Exception("You have already submitted this assignment.")
+        # Build file name and path
+        file_name = f"{user.user_id}_{assignment.id}_{submission_file.name}"
+        relative_path = os.path.join("submissions", file_name)
+        full_path = default_storage.save(relative_path, ContentFile(submission_file.read()))
 
+        # Save in DB
         Submission.objects.create(
             assignment=assignment,
             student=user,
-            submission_file=submission_file
+            submission_file=relative_path,
         )
 
-        return f"Assignment '{assignment.name}' submitted successfully."
+        return f"Submission uploaded successfully to {relative_path}"
 
     @strawberry.field
     def my_classes(self, info: Info) -> list["ClassType"]:

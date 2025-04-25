@@ -46,4 +46,8 @@ export const CREATE_USER_MUTATION = gql`
     }
 `;
 
-
+export const ADD_STUDENTS_TO_CLASS = gql`
+  mutation AddStudentsToClass($classId: Int!, $studentIds: [Int!]!) {
+    add_students_to_class(class_id: $classId, student_ids: $studentIds)
+  }
+`

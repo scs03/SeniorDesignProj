@@ -30,7 +30,7 @@ class Assignment(models.Model):
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    submission_file = models.TextField()  # Use FileField if you plan to support actual uploads
+    submission_file = models.FileField(upload_to='submissions/')  # ✅ Save files to MEDIA_ROOT/submissions/
     submission_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
