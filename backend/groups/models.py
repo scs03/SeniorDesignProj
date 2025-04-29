@@ -32,6 +32,10 @@ class Submission(models.Model):
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     submission_file = models.FileField(upload_to='submissions/')  # ✅ Save files to MEDIA_ROOT/submissions/
     submission_date = models.DateTimeField(auto_now_add=True)
+    human_grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    ai_grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    graded_by_ai = models.BooleanField(default=False)
+    feedback = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.student.name} - {self.assignment.name}"

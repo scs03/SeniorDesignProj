@@ -51,3 +51,10 @@ export const ADD_STUDENTS_TO_CLASS = gql`
     add_students_to_class(class_id: $classId, student_ids: $studentIds)
   }
 `
+
+export const UPDATE_SUBMISSION = gql`
+  mutation UpdateSubmission($submission_id: Int!, $human_grade: Float, $feedback: String) {
+    update_submission(submission_id: $submission_id, human_grade: $human_grade, feedback: $feedback)
+}
+
+`;
