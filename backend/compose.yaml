@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - ./media:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - db
+  redis:
+    image: "redis:alpine"
+  db:
+    image: postgres
+    container_name: db_container_senior_design
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: senior_project
+      POSTGRES_USER: senior_user
+      POSTGRES_PASSWORD: testing123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container_senior_design
+    environment:
+      PGADMIN_DEFAULT_EMAIL: sriramsendhil@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: testing123
+    ports:
+      - "8888:80"
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+volumes:
+  postgres_data:
+  pgadmin_data:

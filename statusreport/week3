@@ -1,0 +1,59 @@
+-------------------------------------------------------------------
+Week: 2/21 - 2/28
+Team leader:  
+
+Team member #1: Vikram Ramachandra  
+Total hours worked: 10  
+Tasks completed:  
+  - Made dataset for website  
+  - Started implementing a relational database schema using PostgreSQL  
+  - Configured PostgreSQL in Django’s settings for database connectivity  
+  - Began developing Django models for essays, AI feedback, grading history, and comments  
+  - Helped with Figma mockup  
+
+Tasks for next week:  
+  - Finish database and mockup  
+
+Team member #2: Nihanth Attaluri  
+Total hours worked: 10  
+Tasks completed:  
+  - Worked on setting up the base and experimenting with the Hugging Face model inference API  
+  - Researched model training on Google Colab, including different runtimes and training using CUDA  
+
+Tasks for next week:  
+  - Update API to better model, experiment with inference api and find out token size / requests. For free tier
+
+Team member #3: Saumya Kapoor  
+Total hours worked: [unknown]   
+Tasks completed:  
+  - Updated Figma
+  - Went over requirements and identified key feautures
+
+Tasks for next week:  
+  - Start integrations with Sriram
+
+Team member #4: Sriram Sendhil  
+Total hours worked: 8ish  
+Tasks completed:  
+  - Created home page and dashboard pages  
+  - Started work with ShadCN  
+  - Set up file directory to work in accordance with Auth0  
+
+Tasks for next week:  
+  - Need to finish up integration of all shadCN resources across all pages
+  - finish front end
+
+Team member #5: Sruti Karthikeyan  
+Total hours worked: ~9  
+Tasks completed:  
+  - Cleaned text: removed punctuation, stopwords, and standardized case  
+  - Tokenized essays efficiently  
+  - Extracted key features: word count, character count, unique words, lexical diversity, and punctuation count  
+  - Normalized scores (scaled between 0-1) for better model learning  
+  - Conducted exploratory data analysis (EDA) on the dataset to visualize key insights  
+
+Tasks for next week:  
+  - Continue preprocessing  
+  - Tune the dataset for the selected model 
+
+-------------------------------------------------------------------
