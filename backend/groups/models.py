@@ -20,7 +20,7 @@ class Assignment(models.Model):
     name = models.CharField(max_length=255)
     prompt = models.TextField(blank=True, null=True)
     due_date = models.DateTimeField()
-    rubric_image = models.ImageField(upload_to='rubrics/')
+    rubric_file = models.FileField(upload_to='rubrics/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

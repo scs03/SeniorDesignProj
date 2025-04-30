@@ -31,7 +31,19 @@ import { BookOpen, Calendar, Users, Award, Plus, Lightbulb, Brain } from 'lucide
 const TeacherHomePage = () => {
   const user = useSession() as { email: string; user_id: string } | null
   const [openDialog, setOpenDialog] = useState(false)
-  const [form, setForm] = useState({ classId: '', name: '', dueDate: '', prompt: '' })
+  const [form, setForm] = useState<{
+    classId: string;
+    name: string;
+    dueDate: string;
+    prompt: string;
+    rubricFile: File | null;
+  }>({
+    classId: "",
+    name: "",
+    dueDate: "",
+    prompt: "",
+    rubricFile: null,
+  });
   const [createAssignment] = useMutation(CREATE_ASSIGNMENT)
   const [addStudents] = useMutation(ADD_STUDENTS_TO_CLASS)
   const [studentDialogOpenId, setStudentDialogOpenId] = useState<number | null>(null)
@@ -145,13 +157,81 @@ const TeacherHomePage = () => {
 
   {/* Existing Create Assignment Dialog */}
   <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-    <DialogTrigger asChild>
-      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-        <Plus className="h-4 w-4 mr-2" /> Create Assignment
+  <DialogTrigger asChild>
+    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+      <Plus className="h-4 w-4 mr-2" /> Create Assignment
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="bg-white border-blue-200">
+    <DialogHeader>
+      <DialogTitle className="text-blue-800 text-xl">Create a New Assignment</DialogTitle>
+      <DialogDescription className="text-blue-600">
+        Let our AI TA help your students improve their writing skills.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="space-y-4 pt-2">
+      <div>
+        <Label className="text-blue-700">Class</Label>
+        <select 
+          name="classId" 
+          value={form.classId} 
+          onChange={e => setForm({...form, classId: e.target.value})}
+          className="w-full rounded-md border border-blue-200 px-3 py-2 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select a class</option>
+          {data?.teacher_classes.map(classItem => (
+            <option key={classItem.id} value={classItem.id}>{classItem.name}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <Label className="text-blue-700">Assignment Name</Label>
+        <Input 
+          name="name" 
+          value={form.name} 
+          onChange={handleChange} 
+          className="border-blue-200 focus:ring-blue-500"
+          placeholder="Essay on Literature Analysis..." 
+        />
+      </div>
+      <div>
+        <Label className="text-blue-700">Due Date</Label>
+        <Input 
+          name="dueDate" 
+          type="datetime-local" 
+          value={form.dueDate} 
+          onChange={handleChange} 
+          className="border-blue-200 focus:ring-blue-500" 
+        />
+      </div>
+      <div>
+        <Label className="text-blue-700">Assignment Prompt</Label>
+        <Textarea 
+          name="prompt" 
+          value={form.prompt} 
+          onChange={handleChange} 
+          className="border-blue-200 focus:ring-blue-500 min-h-32"
+          placeholder="Describe the assignment instructions here..."
+        />
+      </div>
+      <div>
+        <Label className="text-blue-700">Upload Rubric (PDF)</Label>
+        <Input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setForm({ ...form, rubricFile: e.target.files?.[0] || null })}
+          className="border-blue-200 focus:ring-blue-500"
+        />
+      </div>
+      <Button 
+        onClick={handleSubmit} 
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white mt-2"
+      >
+        Create Assignment
       </Button>
-    </DialogTrigger>
-    ...
-  </Dialog>
+    </div>
+  </DialogContent>
+</Dialog>
 </div>
 
       </div>
