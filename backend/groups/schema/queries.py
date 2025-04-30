@@ -63,6 +63,11 @@ class Query:
                 student_name=sub.student.name,
                 assignment_id=sub.assignment.id,
                 class_id=sub.assignment.class_assigned.id,
+                submission_date=sub.submission_date,
+                graded_by_ai=sub.graded_by_ai,
+                human_grade=sub.human_grade,
+                ai_grade=sub.ai_grade,
+                feedback=sub.feedback,
             )
             for sub in submissions
         ]
