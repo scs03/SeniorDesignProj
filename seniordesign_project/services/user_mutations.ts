@@ -11,3 +11,43 @@ export const LOGIN_MUTATION = gql`
     }
   }
 `;
+
+export const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
+export const CREATE_USER_MUTATION = gql`
+  mutation RegisterUser($name: String!, $email: String!, $password: String!, $role: String!) {
+    register_user(name: $name, email: $email, password: $password, role: $role) {
+      user_id
+      name
+      email
+      role
+      created_at
+    }
+  }
+`
+
+  export const CREATE_ASSIGNMENT = gql`
+    mutation CreateAssignment(
+      $classId: Int!
+      $name: String!
+      $dueDate: DateTime
+      $prompt: String
+    ) {
+      create_assignment(
+        class_id: $classId
+        name: $name
+        due_date: $dueDate
+        prompt: $prompt
+      )
+    }
+`;
+
+export const ADD_STUDENTS_TO_CLASS = gql`
+  mutation AddStudentsToClass($classId: Int!, $studentIds: [Int!]!) {
+    add_students_to_class(class_id: $classId, student_ids: $studentIds)
+  }
+`

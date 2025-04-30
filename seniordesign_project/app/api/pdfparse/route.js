@@ -19,6 +19,7 @@ async function buffer(req) {
 
 export async function POST(req) {
   try {
+    console.log("--- /api/pdfparse API route hit ---"); // <--- ADD THIS LOG
     const fileBuffer = await buffer(req);
     
     const tempFilePath = "./temp_uploaded.pdf";

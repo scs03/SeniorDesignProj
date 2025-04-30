@@ -23,7 +23,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     setError("");
     setLoading(true);
-
+  
     try {
       const { data } = await login({
         variables: {
@@ -31,17 +31,19 @@ export default function SignIn() {
           password,
         },
       });
-
+  
       if (data?.login) {
-        console.log("Login data:", data.login);
-        const { role } = data.login;
-
-        console.log("Login successful:", role);
-
-        // Redirect based on role
-        if (role.trim() === "teacher") {
+        const userData = data.login;
+  
+        // 🔐 Set user in localStorage **before** redirect
+        localStorage.setItem("user", JSON.stringify(userData));
+        console.log("Login successful:", userData);
+  
+        const role = userData.role.trim().toLowerCase();
+  
+        if (role === "teacher") {
           router.push("/dashboard/teacher");
-        } else if (role.trim().toLowerCase() === "student") {
+        } else if (role === "student") {
           router.push("/dashboard/student");
         } else {
           setError("Invalid role.");
@@ -55,6 +57,7 @@ export default function SignIn() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

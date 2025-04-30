@@ -1,78 +1,114 @@
-"use client";
+"use client"; // Make sure this directive is at the very top
 
 import { useState } from "react";
 
-export default function UploadRubric() {
-  const [file, setFile] = useState<File | null>(null);
-  const [traits, setTraits] = useState<string[]>([]);
+// Define the detailed structure expected for each trait
+// This interface should match the DetailedTrait interface in page.tsx
+interface DetailedTrait {
+  name: string;
+  description: string;
+  scale: string; // Or the actual type if not always a stringified JSON
+  weight: number;
+}
+
+interface UploadRubricProps {
+  rubricText: string;
+  // Callback expects an array of DetailedTrait objects
+  onTraitsExtracted?: (traits: DetailedTrait[]) => void;
+}
+
+export default function UploadRubric({ rubricText, onTraitsExtracted }: UploadRubricProps) {
+  // Local state to hold the extracted traits within this component
+  // This state also uses the DetailedTrait interface
+  const [traits, setTraits] = useState<DetailedTrait[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // Use null for no error
 
   const handleUpload = async () => {
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("rubric", file);
+    // Only proceed if there is rubric text to send
+    if (!rubricText.trim()) {
+        setError("Rubric text is empty.");
+        return;
+    }
 
     setLoading(true);
-    setError(null);
-    setTraits([]);
+    setError(null); // Clear previous error
+    setTraits([]); // Clear previous traits
+
 
     try {
-      const res = await fetch("/api/parse-rubric", {
+      // Assuming /api/parse-rubric takes raw rubric text and returns { traits: DetailedTrait[] }
+      const res = await fetch("/api/parse-rubric", { // Check this endpoint's purpose/response
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rubricText }), // Send the raw rubric text
       });
 
       const data = await res.json();
 
+      // Check if the HTTP response status was successful
       if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
+        // If response not ok, data should contain error info
+        throw new Error(data.error || JSON.stringify(data) || "Something went wrong during trait extraction.");
       }
 
-      setTraits(data.traits || []);
-    } catch (err: any) {
-      setError(err.message || "Unknown error occurred");
+      // Assuming data.traits is an array of objects matching the DetailedTrait structure
+      // Add a check here to ensure data.traits is an array, just for robustness
+      if (!Array.isArray(data.traits)) {
+           console.error("API /api/parse-rubric did not return an array for data.traits:", data);
+           throw new Error("Invalid data format from trait extraction API.");
+      }
+
+      // Update local state and call the parent callback with the extracted traits
+      setTraits(data.traits); // Set local state
+      onTraitsExtracted?.(data.traits); // Call parent callback
+
+    } catch (err: any) { // Added type annotation for err
+      console.error("UploadRubric Frontend Fetch Error:", err); // Log fetch error
+      setError(err.message || "Unknown error occurred during trait extraction.");
+      setTraits([]); // Clear local state on error
+      onTraitsExtracted?.([]); // Clear traits in parent on error
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-lg p-6 max-w-md w-full shadow-sm">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Upload a Rubric</h2>
-
-      <input
-        type="file"
-        accept=".pdf,.txt"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        className="mb-3 block w-full text-sm text-gray-900 border border-gray-300 rounded px-2 py-1"
-      />
-
+    <div className="mt-4 space-y-2">
+      {/* Button is enabled only if not loading and rubricText is not empty */}
       <button
         onClick={handleUpload}
-        disabled={!file || loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded disabled:opacity-50"
+        disabled={loading || !rubricText.trim()} // Disable if loading or rubricText is empty
+        className={`w-full text-sm font-medium py-2 rounded transition duration-200 ${loading || !rubricText.trim() ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
       >
-        {loading ? "Parsing..." : "Upload & Parse Rubric"}
+        {loading ? "Extracting Traits..." : "Extract Traits"}
       </button>
 
+      {/* Error Message */}
       {error && (
-        <p className="mt-3 text-red-600 text-sm">
+        <p className="text-red-600 text-sm mt-2">
           ❌ {error}
         </p>
       )}
 
+      {/* Display Extracted Traits */}
       {traits.length > 0 && (
         <div className="mt-4">
-          <h3 className="font-semibold text-gray-800 mb-2 text-sm">Extracted Traits:</h3>
-          <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
+          <h3 className="font-semibold text-gray-800 mb-1 text-sm">Extracted Traits:</h3>
+           {/* Use a scrollable container if the list can get long */}
+          <ul className="list-disc list-inside text-sm text-gray-800 space-y-1 max-h-40 overflow-y-auto p-2 border border-gray-200 rounded">
             {traits.map((trait, i) => (
-              <li key={i}>{trait}</li>
+              <li key={i} className="break-words"> {/* Added break-words for long descriptions/scales */}
+                <strong>{trait.name}:</strong> {trait.description} <br />
+                <strong>Scale:</strong> {trait.scale} <br />
+                <strong>Weight:</strong> {trait.weight} <br />
+              </li>
             ))}
           </ul>
         </div>
       )}
     </div>
   );
-}   
+}

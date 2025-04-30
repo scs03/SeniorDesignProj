@@ -11,11 +11,15 @@ class UserType:
     created_at: datetime
 
     @staticmethod
-    def from_instance(user: CustomUser) -> "UserType":
+    def from_instance(user) -> "UserType":
+        created_at = user.created_at
+        if isinstance(created_at, str):  # guard against corrupted field
+            created_at = datetime.fromisoformat(created_at)
+
         return UserType(
             user_id=user.user_id,
             name=user.name,
             email=user.email,
             role=user.role,
-            created_at=str(user.created_at)
-        )
+            created_at=created_at,
+        )   
