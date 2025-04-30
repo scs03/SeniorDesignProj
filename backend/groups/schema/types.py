@@ -27,10 +27,11 @@ class SubmissionMeta:
     student_id: int
     student_name: str
     assignment_id: int
+    assignment_name: str  # ✅ ADD THIS
     class_id: int
-    submission_date: Optional[datetime]
-    graded_by_ai: bool
-    human_grade: Optional[float]
+    class_name: str       # ✅ AND THIS
+    submission_date: str
     ai_grade: Optional[float]
+    human_grade: Optional[float]
     feedback: Optional[str]
-    # You can optionally also return `class_name` and `assignment_name` if you fetch them via `.select_related`
+    graded_by_ai: bool
