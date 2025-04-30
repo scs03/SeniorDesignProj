@@ -27,5 +27,11 @@ class SubmissionMeta:
     student_id: int
     student_name: str
     assignment_id: int
+    assignment_name: str  # ✅ ADD THIS
     class_id: int
-    
+    class_name: str       # ✅ AND THIS
+    submission_date: str
+    ai_grade: Optional[float]
+    human_grade: Optional[float]
+    feedback: Optional[str]
+    graded_by_ai: bool

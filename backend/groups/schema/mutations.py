@@ -157,3 +157,30 @@ class Mutation:
 
     #     return list(assignments)
 
+    @strawberry.mutation
+    def update_submission(
+        self,
+        info: Info,
+        submission_id: int,
+        human_grade: Optional[float] = None,
+        feedback: Optional[str] = None
+    ) -> str:
+        user = info.context.request.user
+        if not user.is_authenticated or user.role != "teacher":
+            raise Exception("Only teachers can update submissions.")
+
+        try:
+            submission = Submission.objects.get(id=submission_id, assignment__class_assigned__teacher=user)
+        except Submission.DoesNotExist:
+            raise Exception("Submission not found or not owned by your class.")
+
+        # UPDATE FIELDS
+        if human_grade is not None:
+            submission.human_grade = human_grade
+        if feedback is not None:
+            submission.feedback = feedback
+
+        submission.save()
+        return "Submission updated successfully."
+
+
