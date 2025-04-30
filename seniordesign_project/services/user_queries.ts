@@ -31,8 +31,15 @@ export const GET_ALL_SUBMISSIONS = gql`
       submission_id
       student_id
       student_name
-      assignment_id
       class_id
+      class_name
+      assignment_id
+      assignment_name
+      submission_date
+      ai_grade
+      human_grade
+      feedback
+      graded_by_ai
     }
   }
 `;

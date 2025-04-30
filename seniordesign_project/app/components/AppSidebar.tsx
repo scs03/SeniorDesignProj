@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useMutation } from "@apollo/client";
 import { LOGOUT_MUTATION } from "@/services/user_mutations";
+import { useSession } from "@/hooks/useSession";
 
 import {
   Sidebar,
@@ -22,6 +23,7 @@ export function AppSidebar() {
   const router = useRouter();
   const isTeacher = pathname.includes("/dashboard/teacher");
   const userRole: "teacher" | "student" = isTeacher ? "teacher" : "student";
+  const user = useSession() as { name: string; user_id: string; role: string } | null;
 
   const [logout] = useMutation(LOGOUT_MUTATION);
 
@@ -95,8 +97,11 @@ export function AppSidebar() {
                       className="object-cover"
                     />
                   </div>
-                  <p className="mt-3 text-blue-700 font-medium">Ms. Johnson</p>
-                  <p className="text-sm text-blue-500">Science Department</p>
+                    <p className="mt-3 text-blue-700 font-medium">
+                    {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : ""}
+                    </p>
+                  <p className="text-sm text-blue-500">id: {user?.user_id}</p>
+                  <p className="text-sm text-blue-500 opacity-50">{user?.role}</p>
                 </div>
               )}
               <SidebarMenu className="mt-4">
