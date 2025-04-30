@@ -62,12 +62,14 @@ class Query:
                 student_id=sub.student.user_id,
                 student_name=sub.student.name,
                 assignment_id=sub.assignment.id,
+                assignment_name=sub.assignment.name,  # ✅ ensure this exists
                 class_id=sub.assignment.class_assigned.id,
-                submission_date=sub.submission_date,
-                graded_by_ai=sub.graded_by_ai,
-                human_grade=sub.human_grade,
+                class_name=sub.assignment.class_assigned.name,  # ✅ ensure this exists
+                submission_date=sub.submission_date.isoformat(),
                 ai_grade=sub.ai_grade,
+                human_grade=sub.human_grade,
                 feedback=sub.feedback,
+                graded_by_ai=sub.graded_by_ai,
             )
             for sub in submissions
         ]

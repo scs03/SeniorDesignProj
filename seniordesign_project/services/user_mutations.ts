@@ -58,3 +58,12 @@ export const UPDATE_SUBMISSION = gql`
 }
 
 `;
+
+export const CREATE_CLASS = gql`
+  mutation CreateClass($name: String!) {
+    create_class(name: $name) {
+      id
+      name
+    }
+  }
+`;
