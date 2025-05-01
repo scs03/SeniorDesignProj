@@ -10,6 +10,7 @@ class AssignmentType:
     prompt: Optional[str]
     due_date: datetime
     created_at: datetime
+    rubric_file: Optional[str]
 
 @strawberry.type
 class ClassType:

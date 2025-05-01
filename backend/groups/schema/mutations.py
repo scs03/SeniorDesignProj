@@ -101,8 +101,12 @@ class Mutation:
 
     @strawberry.mutation
     def submit_assignment(self, info: Info, assignment_id: int, submission_file: Upload) -> str:
+        print("DEBUG >> Backend hit: submit_assignment")
+        print("DEBUG >> File received:", submission_file.name)
         request = info.context.request
         user: CustomUser = request.user
+
+        print("DEBUG - got submission:", submission_file.name)
 
         if not user.is_authenticated or user.role != "student":
             raise Exception("Only students can submit assignments.")
@@ -123,6 +127,13 @@ class Mutation:
             student=user,
             submission_file=relative_path,
         )
+
+        submission = Submission.objects.create(
+        assignment=assignment,
+        student=user,
+        submission_file=relative_path,
+        )
+        print("✅ Submission saved to DB:", submission)
 
         return f"Submission uploaded successfully to {relative_path}"
 

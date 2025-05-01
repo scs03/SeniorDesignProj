@@ -45,3 +45,39 @@ export const GET_ALL_SUBMISSIONS = gql`
 `;
 
 
+export const GET_MY_SUBMISSIONS = gql`
+  query {
+    my_submissions {
+      submission_id
+      student_id
+      student_name
+      class_id
+      class_name
+      assignment_id
+      assignment_name
+      submission_date
+      ai_grade
+      human_grade
+      feedback
+      graded_by_ai
+    }
+  }
+`;
+
+export const GET_STUDENT_CLASSES = gql`
+  query GetStudentClasses($studentId: Int!) {
+    student_classes(student_id: $studentId) {
+      id
+      name
+      created_at
+      assignments {
+        id
+        name
+        prompt
+        due_date
+        created_at
+        rubric_file 
+      }
+    }
+  }
+`;
