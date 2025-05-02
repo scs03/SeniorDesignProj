@@ -11,17 +11,27 @@ export async function POST(req) {
     for (const trait of traits) {
       const input = `Evaluate this essay based on the trait '${trait.name}': ${essay}`;
 
-      const response = await fetch("https://api-inference.huggingface.co/models/srutiii/flan-t5-base-pt2", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_HF_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ inputs: input })
-      });
+      let response, rawBody;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        response = await fetch("https://api-inference.huggingface.co/models/srutiii/flan-t5-base-pt2", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_HF_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ inputs: input })
+        });
+
+        rawBody = await response.text();
+        if (response.status !== 503 && !rawBody.startsWith("&lt;!DOCTYPE html&gt;") && !rawBody.startsWith("<!DOCTYPE html>")) {
+          break;
+        }
+
+        console.warn(`Retrying HF request for trait '${trait.name}' due to status ${response.status} or HTML response`);
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // wait 2 seconds before retrying
+      }
 
       console.log(`HF fetch for trait '${trait.name}' returned status ${response.status} ${response.statusText}`);
-      const rawBody = await response.text();
       console.log(`HF raw response for trait '${trait.name}' (first 100 chars):`, rawBody.substring(0, 100));
 
       let data;
