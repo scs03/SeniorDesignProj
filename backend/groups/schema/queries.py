@@ -13,6 +13,25 @@ from accounts.schema.types import UserType
 class Query:
 
     @strawberry.field
+    def assignment_by_id(self, info: Info, assignment_id: int) -> AssignmentType:
+        from groups.models import Assignment
+
+        try:
+            assignment = Assignment.objects.get(id=assignment_id)
+        except Assignment.DoesNotExist:
+            raise Exception("Assignment not found.")
+
+        return AssignmentType(
+            id=assignment.id,
+            name=assignment.name,
+            prompt=assignment.prompt,
+            due_date=assignment.due_date,
+            created_at=assignment.created_at,
+            rubric_file=assignment.rubric_file.url if assignment.rubric_file else None,
+        )
+
+
+    @strawberry.field
     def student_classes(self, student_id: int) -> List[ClassType]:
         classes = ClassModel.objects.filter(students__user_id=student_id).prefetch_related("assignments", "teacher", "students")
         
@@ -76,34 +95,32 @@ class Query:
 
     @strawberry.field
     def all_submissions(self, info: Info) -> List[SubmissionMeta]:
-        user = info.context.request.user
-
-        if not user.is_authenticated or user.role != "teacher":
-            raise Exception("Only teachers can view all submissions.")
-
         submissions = Submission.objects.select_related(
-            "student", "assignment", "assignment__class_assigned"
-        ).filter(
-            assignment__class_assigned__teacher=user
-        )
+            "assignment__class_assigned", "student"
+        ).all()
 
         return [
             SubmissionMeta(
-                submission_id=sub.id,
-                student_id=sub.student.user_id,
-                student_name=sub.student.name,
-                assignment_id=sub.assignment.id,
-                assignment_name=sub.assignment.name,  # ✅ ensure this exists
-                class_id=sub.assignment.class_assigned.id,
-                class_name=sub.assignment.class_assigned.name,  # ✅ ensure this exists
-                submission_date=sub.submission_date.isoformat(),
-                ai_grade=sub.ai_grade,
-                human_grade=sub.human_grade,
-                feedback=sub.feedback,
-                graded_by_ai=sub.graded_by_ai,
+                submission_id=s.id,
+                student_id=s.student.pk,
+                student_name=s.student.name,
+                assignment_id=s.assignment.id,
+                assignment_name=s.assignment.name,
+                class_id=s.assignment.class_assigned.id,
+                class_name=s.assignment.class_assigned.name,
+                submission_date=s.submission_date.isoformat(),
+                ai_grade=s.ai_grade,
+                human_grade=s.human_grade,
+                feedback=s.feedback,
+                graded_by_ai=s.graded_by_ai,
+                submission_file=s.submission_file.url  # ✅ fix is here
             )
-            for sub in submissions
+            for s in submissions
         ]
+
+
+
+
 
     @strawberry.field
     def my_submissions(info) -> List[SubmissionMeta]:
@@ -129,6 +146,8 @@ class Query:
                 human_grade=sub.human_grade,
                 feedback=sub.feedback,
                 graded_by_ai=sub.graded_by_ai,
+                submission_file=sub.submission_file.url if sub.submission_file else None,
+
             )
             for sub in submissions
         ]

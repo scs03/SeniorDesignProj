@@ -25,7 +25,7 @@ class Mutation:
         name: str,
         due_date: Optional[datetime] = None,
         prompt: Optional[str] = None,
-        rubric_image: Optional[Upload] = None,
+        rubric_file: Optional[Upload] = None,
     ) -> str:
         request = info.context.request
         user = request.user
@@ -49,15 +49,22 @@ class Mutation:
         if due_date < now_dt:
             raise Exception("Due date must be in the future.")
 
+        saved_rubric_path = None
+        if rubric_file:
+            filename = f"{class_id}_{name.replace(' ', '_')}_{rubric_file.name}"
+            relative_path = os.path.join("rubrics", filename)
+            saved_rubric_path = default_storage.save(relative_path, ContentFile(rubric_file.read()))
+
         Assignment.objects.create(
             class_assigned=class_obj,
             name=name,
             due_date=due_date,
             prompt=prompt,
-            rubric_image=rubric_image,
+            rubric_file=saved_rubric_path,
         )
 
         return f"Assignment '{name}' created successfully."
+
 
 
     @strawberry.mutation

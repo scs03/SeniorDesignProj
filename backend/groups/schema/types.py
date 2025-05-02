@@ -36,3 +36,4 @@ class SubmissionMeta:
     human_grade: Optional[float]
     feedback: Optional[str]
     graded_by_ai: bool
+    submission_file: Optional[str]
