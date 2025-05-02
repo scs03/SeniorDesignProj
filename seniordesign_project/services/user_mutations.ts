@@ -74,3 +74,16 @@ export const CREATE_CLASS = gql`
     }
   }
 `;
+
+export const UPDATE_PROFILE_PICTURE = gql`
+  mutation UpdateProfilePicture($file: Upload!) {
+    update_profile_picture(file: $file) {
+      user_id
+      name
+      email
+      role
+      created_at
+      profile_picture_url
+    }
+  }
+`;

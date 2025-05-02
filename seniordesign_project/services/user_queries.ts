@@ -96,3 +96,17 @@ export const GET_ASSIGNMENT_BY_ID = gql`
     }
   }
 `;
+
+
+export const GET_ME = gql`
+  query GetMe {
+    me {
+      user_id
+      name
+      email
+      role
+      profile_picture_url
+    }
+  }
+`;
+

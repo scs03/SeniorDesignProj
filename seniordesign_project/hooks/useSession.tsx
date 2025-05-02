@@ -7,6 +7,7 @@ type UserSession = {
   role: string;
   user_id: number;
   created_at: string;
+  profile_picture_url?: string; 
 };
 
 export function useSession() {

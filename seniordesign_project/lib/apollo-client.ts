@@ -1,13 +1,15 @@
 // lib/apollo-client.ts
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 
-const httpLink = createHttpLink({
+
+const uploadLink = createUploadLink({
   uri: "http://localhost:8000/graphql",
-  credentials: "include", // Include cookies for session-based auth if needed
+  credentials: "include",
 });
 
 const client = new ApolloClient({
-  link: httpLink,
+  link: uploadLink,
   cache: new InMemoryCache(),
 });
 
