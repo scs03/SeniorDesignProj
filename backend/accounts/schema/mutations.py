@@ -14,16 +14,7 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 class Mutation:
     @strawberry.mutation
     def register_user(self, name: str, email: str, password: str, role: str) -> UserType:
-        if CustomUser.objects.filter(email=email).exists():
-            raise Exception("A user with this email already exists.")
-
-        user = CustomUser.objects.create_user(
-            name=name,
-            email=email,
-            password=password,
-            role=role
-        )
-
+        email = email.strip().lower()
         if CustomUser.objects.filter(email=email).exists():
             raise Exception("A user with this email already exists.")
 
