@@ -1,0 +1,47 @@
+Meeting Notes
+Date: March 14th, 2025
+Attendees:
+
+Dr. Alagar
+Vikram Rohit Ramachandra
+Saumya Kapoor
+Sruti Karthikeyan
+Nihanth Attaluri
+Duration: ~45 minutes
+Platform: Microsoft Teams
+
+
+
+Progress Updates (Weekly Status Report)
+Vikram Rohit Ramachandra
+Worked on connecting the database with the frontend and using user data to attempt login functionality. Collaborated with Saumya during this integration process.
+Next Steps: Finish connecting the database with the frontend to ensure smooth login and data retrieval functionality.
+
+Saumya Kapoor
+Contributed to backend-frontend integration through pair programming with Vikram. Worked on drafting the system architecture diagram to visualize key components and data flow.
+Next Steps: Finalize frontend-backend connection and implement full user authentication.
+
+Nihanth Attaluri
+Focused on model research and collaborated with Sruti on training efforts. Helped evaluate model performance and refine feature selection.
+Next Steps: Complete fine-tuning of the model and analyze training times for optimization.
+
+Sruti Karthikeyan
+Tokenized essays using DistilRoBERTa and extracted key linguistic features. Initially fine-tuned RoBERTa but faced high resource usage, prompting a switch to DistilRoBERTa. Achieved a Mean Squared Error (MSE) of 0.0016 and a Quadratic Weighted Kappa (QWK) of 0.9022.
+Next Steps: Introduce unseen data to assess model generalization and denormalize predicted scores for interpretability.
+
+
+
+
+To-Do List for This Week
+For Vikram & Saumya:
+
+Complete database-to-frontend integration.
+Implement and test user authentication features.
+For Sruti & Nihanth:
+
+Finalize model fine-tuning and validate using unseen data.
+Begin score denormalization and evaluate prediction clarity.
+For Everyone:
+
+Ensure all system components integrate seamlessly.
+Begin preparing materials and visualizations for the upcoming demo.

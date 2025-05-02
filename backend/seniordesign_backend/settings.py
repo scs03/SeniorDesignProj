@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +31,9 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,9 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'strawberry.django',
     'accounts',
-    'assignments',
-    'grades',
-    'feedback',
+    'groups',  
     'corsheaders',
 ]
 
@@ -53,8 +55,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-MIDDLEWARE = [        
-    "corsheaders.middleware.CorsMiddleware",  # 👈 Add this on top
+MIDDLEWARE = [    
+    "middleware.allow_iframe.AllowIframeForMedia",    
+    "corsheaders.middleware.CorsMiddleware", 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -87,6 +90,8 @@ WSGI_APPLICATION = 'seniordesign_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
+X_FRAME_OPTIONS = 'ALLOWALL'
 
 DATABASES = {
     'default': {
@@ -140,3 +145,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

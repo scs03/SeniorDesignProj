@@ -1,0 +1,88 @@
+4/25 Status Reports
+
+Vikram Ramachandra
+Hours worked: 10
+
+Tasks Completed:
+Worked with saumya on creating mutations and queries for the teachers to create new classes and add students to them, also testing if the students can access the classes and the assignments given in them
+Worked on backend schema with saumya which helps students access the class information
+
+Tasks for Next Week:
+Finish integration and be ready for the full demo, along with integrating the AI portion.
+
+Sriram Sendhil: 10
+**Total Hours Worked:** ~10 hours 
+
+---
+
+### Tasks Completed
+
+- **UI Enhancements for Teacher Dashboard**
+- Improved the layout and styling of the Teacher Home Page for better usability.
+- Enhanced class cards with dropdowns and action buttons.
+- Integrated assignment creation modal and real-time class assignment display.
+
+- **Live Submission View System**
+- Built the `TeacherSubmissions` view to dynamically load and organize submissions by **Class → Assignment → Students**.
+- Created dropdown toggles per assignment for clear navigation and improved visibility of student work.
+
+- **Modal for Grading and Feedback**
+- Designed a grading dialog modal to allow teachers to view submission details and input:
+- Human grade
+- Comments/feedback
+- View status (AI graded vs manually graded)
+- Integrated with backend mutation to persist grading and feedback changes.
+
+- **GraphQL Mutation Integration**
+- Connected the `update_submission` mutation from the frontend to backend.
+- Handled backend schema updates and adjusted frontend variables accordingly (e.g. Float vs Int).
+- Fixed bugs where values were not persisting, added refetch after mutation, and confirmed correct database updates.
+
+---
+
+### Tasks for Next Week
+
+- Integrate actual file preview (PDF/Text) in grading modal.
+- Add rubric-guided grading inputs (trait-by-trait).
+- Display clearer grading history or edit timeline.
+- Implement submission filtering and class search capability.
+
+Sruti Karthikeyan
+Hours worked: 10
+
+Tasks completed:
+
+- Trained an initial essay trait scoring model using flan-t5-small on Set 7 of the ASAP dataset
+
+- Switched to flan-t5-base to improve scoring consistency and accuracy across traits, especially for borderline essays
+
+- Integrated a validation layer using OpenAI's GPT API to cross-check Flan-T5 trait scores with rationale-based comparisons
+
+- Implemented a fallback system to automatically switch to gpt-3.5-turbo when gpt-4 is unavailable
+
+- Developed logic to reconcile disagreements between Flan and GPT by averaging or deferring based on confidence
+
+Next Week:
+- Wrap up uploading to hugging face with nihanth and integrate with front end + demo ready!
+
+Saumya Kapoor
+Hours worked: 10
+
+Tasks completed:
+
+- created a query to get all the classes a student is enrolled in
+- Query to get assignments for a specific class when a student clicks on the class
+- added to the backend schema to support the query which allows students to see class assingments
+- created a mutation allowing students to submit an assignment 
+
+Tasks next week: integration for student view with vikram and sriram and complete testing
+
+Nihanth Attaluri
+Hours worked: 10
+Tasks Completed:
+- Rearranged data outputs to be compatible with new model
+- Implementing Prometheus (pretrained model) as a validation layer
+- 
+
+Next Week: 
+Integrate and be ready for demo

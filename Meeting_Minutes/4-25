@@ -1,0 +1,67 @@
+Meeting Notes
+Date: April 25th, 2025
+Attendees:
+
+* Dr. Alagar
+* Thennannamalai Malligarjunan
+* Vikram Rohit Ramachandra
+* Sriram Sendhil
+* Sruti Karthikeyan
+* Saumya Kapoor
+* Nihanth Attaluri
+
+Duration: \~45 minutes
+Platform: Microsoft Teams
+
+---
+
+Progress Updates (Weekly Status Report)
+
+Vikram Rohit Ramachandra
+Worked with Saumya to implement GraphQL mutations and queries for teachers to create classes and add students. Collaboratively tested if students could view assigned classes and related assignments. Contributed to backend schema changes that enable student access to class information.
+Next Steps: Finalize integration tasks and ensure full readiness for the upcoming demo, including AI functionality.
+
+Sriram Sendhil
+Enhanced UI on the Teacher Home Page, refining layout and styling. Improved class cards with dropdowns and action buttons. Integrated the assignment creation modal for real-time updates.
+Developed the `TeacherSubmissions` view for organizing submissions by Class → Assignment → Students. Created a grading modal for human feedback, grading type display (AI/manual), and backend persistence. Connected frontend to the `update_submission` mutation, resolved data sync bugs, and ensured accurate backend updates.
+Next Steps: Add file preview support, rubric-based grading inputs, submission filtering, and grading history display.
+
+Sruti Karthikeyan
+Trained an initial trait-based essay scoring model using Flan-T5-small and then upgraded to Flan-T5-base for better accuracy on edge cases. Introduced GPT API validation to cross-check model outputs. Built a fallback system for GPT availability and logic to resolve score disagreements.
+Next Steps: Upload the model to Hugging Face with Nihanth and complete frontend integration ahead of the demo.
+
+Saumya Kapoor
+Developed queries to retrieve enrolled classes and class-specific assignments for students. Updated backend schema accordingly and added a mutation for student assignment submission.
+Next Steps: Collaborate with Vikram and Sriram on integrating student views and complete end-to-end testing.
+
+Nihanth Attaluri
+Refactored output data for compatibility with the new model and began integrating Prometheus as a validation layer.
+Next Steps: Finalize integration work and ensure system is demo-ready.
+
+---
+
+### **To-Do List for This Week**
+
+**For Vikram & Saumya:**
+
+* Complete frontend/backend integration for student-facing class and assignment views.
+* Test all class creation and assignment flows thoroughly.
+
+**For Sriram:**
+
+* Implement file preview functionality in the grading modal.
+* Add rubric-based grading and submission filtering tools.
+* Continue frontend integration of backend updates.
+
+**For Sruti & Nihanth:**
+
+* Finish Hugging Face model upload.
+* Integrate model with frontend AI grading view.
+* Prepare rationale-based validation examples for demo.
+
+**For Everyone:**
+
+* Ensure all components are working seamlessly for the May 2 demo.
+* Review demo script and rehearse individual parts.
+* Begin outlining content for the final report and coordinate on shared sections.
+
