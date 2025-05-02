@@ -1,10 +1,11 @@
 import strawberry
-from accounts.schema.types import UserType
-from accounts.models import CustomUser
 from typing import Optional
 from strawberry.types import Info
+from strawberry.file_uploads import Upload
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 
+from accounts.models import CustomUser
+from accounts.schema.types import UserType  # This must be a @strawberry_django.type(CustomUser)
 
 @strawberry.type
 class Mutation:
@@ -17,10 +18,16 @@ class Mutation:
             name=name,
             email=email,
             password=password,
-            role=role
+            role=role,
         )
 
-        return UserType.from_instance(user)
+        return UserType(
+            user_id=user.user_id,
+            name=user.name,
+            email=user.email,
+            role=user.role,
+            created_at=user.created_at,
+        )
 
     @strawberry.mutation
     def login(self, info: Info, email: str, password: str) -> Optional[UserType]:
@@ -36,11 +43,25 @@ class Mutation:
                 role=user.role,
                 created_at=user.created_at,
             )
-        return None
 
+        return None
 
     @strawberry.mutation
     def logout(self, info: Info) -> bool:
         request = info.context["request"]
         django_logout(request)
         return True
+
+    @strawberry.mutation
+    def upload_profile_picture(self, info: Info, picture: Upload) -> UserType:
+        request = info.context["request"]
+        user: CustomUser = request.user
+        user.profile_picture.save(picture.filename, picture.file, save=True)
+
+        return UserType(
+            user_id=user.user_id,
+            name=user.name,
+            email=user.email,
+            role=user.role,
+            created_at=user.created_at,
+        )

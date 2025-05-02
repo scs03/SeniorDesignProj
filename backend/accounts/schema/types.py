@@ -1,8 +1,11 @@
-import strawberry
-from accounts.models import CustomUser
 from datetime import datetime
+from typing import Optional
+import strawberry
+from strawberry_django import type as django_type
 
-@strawberry.type
+from accounts.models import CustomUser
+
+@django_type(CustomUser)
 class UserType:
     user_id: int
     name: str
@@ -10,16 +13,10 @@ class UserType:
     role: str
     created_at: datetime
 
-    @staticmethod
-    def from_instance(user) -> "UserType":
-        created_at = user.created_at
-        if isinstance(created_at, str):  # guard against corrupted field
-            created_at = datetime.fromisoformat(created_at)
-
-        return UserType(
-            user_id=user.user_id,
-            name=user.name,
-            email=user.email,
-            role=user.role,
-            created_at=created_at,
-        )   
+    @strawberry.field
+    def profile_picture(self) -> Optional[str]:
+        # Access the underlying Django model instance safely
+        pic = getattr(self, "profile_picture", None)
+        if pic and hasattr(pic, "url"):
+            return pic.url
+        return None

@@ -1,9 +1,12 @@
 import strawberry
 from datetime import datetime
 from typing import List, Optional
-from accounts.schema.types import UserType  # Assuming this exists
 
-@strawberry.type
+from groups.models import Assignment, Class
+from accounts.schema.types import UserType  # ✅ Import the single source of truth
+
+# ✅ 1. Assignment type
+@strawberry.django.type(Assignment)
 class AssignmentType:
     id: strawberry.ID
     name: str
@@ -11,25 +14,26 @@ class AssignmentType:
     due_date: datetime
     created_at: datetime
 
-@strawberry.type
+# ✅ 2. Class type, includes teacher and assignments
+@strawberry.django.type(Class)
 class ClassType:
     id: strawberry.ID
     name: str
     created_at: datetime
     teacher: UserType
     assignments: List[AssignmentType]
-    student_count: int 
+    student_count: int  # Calculated separately if needed
 
-
+# ✅ 3. Submission metadata for detailed feedback/grade views
 @strawberry.type
 class SubmissionMeta:
     submission_id: int
     student_id: int
     student_name: str
     assignment_id: int
-    assignment_name: str  # ✅ ADD THIS
+    assignment_name: str
     class_id: int
-    class_name: str       # ✅ AND THIS
+    class_name: str
     submission_date: str
     ai_grade: Optional[float]
     human_grade: Optional[float]

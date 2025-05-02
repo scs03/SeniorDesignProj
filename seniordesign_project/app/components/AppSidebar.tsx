@@ -2,7 +2,6 @@
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Codepen, LogOut, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useMutation } from "@apollo/client";
 import { LOGOUT_MUTATION } from "@/services/user_mutations";
 import { useSession } from "@/hooks/useSession";
@@ -17,6 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import ProfilePictureUploader from "@/components/ProfilePictureUploader"; // ✅ added
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -88,22 +88,16 @@ export function AppSidebar() {
             <SidebarGroupContent>
               {userRole === "teacher" && (
                 <div className="flex flex-col items-center py-6">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md">
-                    <Image
-                      src="/placeholder-profile.jpg"
-                      alt="Teacher Profile"
-                      width={96}
-                      height={96}
-                      className="object-cover"
-                    />
-                  </div>
-                    <p className="mt-3 text-blue-700 font-medium">
+                  <ProfilePictureUploader /> {/* ✅ Replaces static profile image */}
+
+                  <p className="mt-3 text-blue-700 font-medium">
                     {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : ""}
-                    </p>
+                  </p>
                   <p className="text-sm text-blue-500">id: {user?.user_id}</p>
                   <p className="text-sm text-blue-500 opacity-50">{user?.role}</p>
                 </div>
               )}
+
               <SidebarMenu className="mt-4">
                 {items.map((item) => {
                   const isActive = pathname === item.url;
@@ -133,7 +127,6 @@ export function AppSidebar() {
           </SidebarGroup>
         </div>
 
-        {/* Logout button */}
         <div className="p-6">
           <Button
             variant="outline"

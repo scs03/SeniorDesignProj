@@ -2,21 +2,31 @@ import strawberry
 from typing import Optional
 from datetime import datetime, timedelta
 from strawberry.file_uploads import Upload
-from groups.models import Assignment, Class, Submission
-from accounts.models import CustomUser
 from strawberry.types import Info
-from groups.schema.types import ClassType
-from django.utils.timezone import now
-from django.utils.timezone import is_naive, make_aware, now
-import os
+from django.utils.timezone import now, is_naive, make_aware
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.contrib.auth import authenticate, login as django_login
 
-
+from groups.models import Assignment, Class, Submission
+from accounts.models import CustomUser
+from groups.schema.types import ClassType
+from accounts.schema.types import UserType  # ✅ Make sure this includes profile_picture
 
 
 @strawberry.type
 class Mutation:
+    @strawberry.mutation
+    def login(self, info: Info, email: str, password: str) -> UserType:
+        request = info.context.request
+        user = authenticate(request=request, email=email, password=password)
+
+        if not user:
+            raise Exception("Invalid email or password")
+
+        django_login(request, user)
+        return user  # ✅ Returned as UserType with profile_picture
+
     @strawberry.mutation
     def create_assignment(
         self,
@@ -59,7 +69,6 @@ class Mutation:
 
         return f"Assignment '{name}' created successfully."
 
-
     @strawberry.mutation
     def create_class(self, info: Info, name: str) -> ClassType:
         user = info.context.request.user
@@ -67,10 +76,7 @@ class Mutation:
         if not user.is_authenticated or user.role != 'teacher':
             raise Exception("Only authenticated teachers can create classes.")
 
-        new_class = Class.objects.create(
-            name=name,
-            teacher=user
-        )
+        new_class = Class.objects.create(name=name, teacher=user)
         return new_class
 
     @strawberry.mutation
@@ -98,7 +104,6 @@ class Mutation:
 
         return f"Added {students.count()} student(s) to class '{class_obj.name}'"
 
-
     @strawberry.mutation
     def submit_assignment(self, info: Info, assignment_id: int, submission_file: Upload) -> str:
         request = info.context.request
@@ -117,7 +122,6 @@ class Mutation:
         relative_path = os.path.join("submissions", file_name)
         full_path = default_storage.save(relative_path, ContentFile(submission_file.read()))
 
-        # Save in DB
         Submission.objects.create(
             assignment=assignment,
             student=user,
@@ -134,7 +138,7 @@ class Mutation:
             raise Exception("Only authenticated students can view their enrolled classes.")
 
         return list(user.enrolled_classes.all())
-    
+
     @strawberry.field
     def my_created_classes(self, info: Info) -> list["ClassType"]:
         user: CustomUser = info.context.request.user
@@ -142,20 +146,7 @@ class Mutation:
         if not user.is_authenticated or user.role != 'teacher':
             raise Exception("Only teachers can view their created classes.")
 
-        return list(user.classes.all())  # from related_name='classes' on teacher FK
-
-    # @strawberry.field
-    # def my_assignments(self, info: Info) -> list["AssignmentType"]:
-    #     user: CustomUser = info.context.request.user
-
-    #     if not user.is_authenticated or user.role != 'student':
-    #         raise Exception("Only authenticated students can view their assignments.")
-
-    #     assignments = Assignment.objects.filter(
-    #         class_assigned__in=user.enrolled_classes.all()
-    #     ).order_by("due_date")
-
-    #     return list(assignments)
+        return list(user.classes.all())
 
     @strawberry.mutation
     def update_submission(
@@ -174,7 +165,6 @@ class Mutation:
         except Submission.DoesNotExist:
             raise Exception("Submission not found or not owned by your class.")
 
-        # UPDATE FIELDS
         if human_grade is not None:
             submission.human_grade = human_grade
         if feedback is not None:
@@ -183,4 +173,18 @@ class Mutation:
         submission.save()
         return "Submission updated successfully."
 
+    @strawberry.mutation
+    def upload_profile_picture(self, info: Info, file: Upload) -> str:
+        request = info.context.request
+        user: CustomUser = request.user
 
+        if not user.is_authenticated:
+            raise Exception("Not authenticated")
+
+        filename = f"profile_pics/{user.user_id}_{file.name}"
+        saved_path = default_storage.save(filename, ContentFile(file.read()))
+
+        user.profile_picture = saved_path
+        user.save()
+
+        return f"Uploaded to {saved_path}"
