@@ -95,9 +95,13 @@ class Query:
 
     @strawberry.field
     def all_submissions(self, info: Info) -> List[SubmissionMeta]:
+        user = info.context.request.user
+        if not user.is_authenticated or user.role != "teacher":
+            raise Exception("Only authenticated teachers can view all submissions.")
+
         submissions = Submission.objects.select_related(
             "assignment__class_assigned", "student"
-        ).all()
+        ).filter(assignment__class_assigned__teacher=user)
 
         return [
             SubmissionMeta(
@@ -113,7 +117,7 @@ class Query:
                 human_grade=s.human_grade,
                 feedback=s.feedback,
                 graded_by_ai=s.graded_by_ai,
-                submission_file=s.submission_file.url  # ✅ fix is here
+                submission_file=s.submission_file.url if s.submission_file else None,
             )
             for s in submissions
         ]

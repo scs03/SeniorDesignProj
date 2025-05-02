@@ -76,7 +76,7 @@ const StudentDashboard = () => {
   const studentClasses = data?.student_classes || [];
 
   return (
-    <div className="p-6 w-full max-w-5xl mx-auto space-y-6 bg-blue-50 min-h-screen">
+    <div className="p-6 w-full mx-auto space-y-6 bg-blue-50 min-h-screen">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-blue-800">
           Welcome, {user.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : "Student"}!
