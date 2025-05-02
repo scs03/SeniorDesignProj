@@ -5,11 +5,25 @@ from typing import Optional
 from strawberry.types import Info
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 
+from typing import Optional
+from strawberry.types import Info
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
     def register_user(self, name: str, email: str, password: str, role: str) -> UserType:
+        if CustomUser.objects.filter(email=email).exists():
+            raise Exception("A user with this email already exists.")
+
+        user = CustomUser.objects.create_user(
+            name=name,
+            email=email,
+            password=password,
+            role=role
+        )
+
         if CustomUser.objects.filter(email=email).exists():
             raise Exception("A user with this email already exists.")
 

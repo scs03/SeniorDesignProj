@@ -1,1 +1,15 @@
+seniordesign_project/temp_uploaded.pdf
+backend/__pycache__/backend.cpython-311.pyc
 .DS_Store
+seniordesign_project/.env
+*.env
+backend/.venv
+.venv/
+venv/
+
+#Python bytecode & cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
