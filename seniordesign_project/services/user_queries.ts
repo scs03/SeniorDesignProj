@@ -61,6 +61,7 @@ export const GET_MY_SUBMISSIONS = gql`
       human_grade
       feedback
       graded_by_ai
+      submission_file
     }
   }
 `;
