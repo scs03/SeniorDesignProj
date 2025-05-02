@@ -28,35 +28,34 @@ export const CREATE_USER_MUTATION = gql`
       created_at
     }
   }
-`
+`;
 
-  export const CREATE_ASSIGNMENT = gql`
-    mutation CreateAssignment(
-      $classId: Int!
-      $name: String!
-      $dueDate: DateTime
-      $prompt: String
-    ) {
-      create_assignment(
-        class_id: $classId
-        name: $name
-        due_date: $dueDate
-        prompt: $prompt
-      )
-    }
+export const CREATE_ASSIGNMENT = gql`
+  mutation CreateAssignment(
+    $classId: Int!
+    $name: String!
+    $dueDate: DateTime
+    $prompt: String
+  ) {
+    create_assignment(
+      class_id: $classId
+      name: $name
+      due_date: $dueDate
+      prompt: $prompt
+    )
+  }
 `;
 
 export const ADD_STUDENTS_TO_CLASS = gql`
   mutation AddStudentsToClass($classId: Int!, $studentIds: [Int!]!) {
     add_students_to_class(class_id: $classId, student_ids: $studentIds)
   }
-`
+`;
 
 export const UPDATE_SUBMISSION = gql`
   mutation UpdateSubmission($submission_id: Int!, $human_grade: Float, $feedback: String) {
     update_submission(submission_id: $submission_id, human_grade: $human_grade, feedback: $feedback)
-}
-
+  }
 `;
 
 export const CREATE_CLASS = gql`
@@ -64,6 +63,17 @@ export const CREATE_CLASS = gql`
     create_class(name: $name) {
       id
       name
+    }
+  }
+`;
+
+export const UPLOAD_PROFILE_PICTURE = gql`
+  mutation UploadProfilePicture($file: Upload!) {
+    upload_profile_picture(file: $file) {
+      user_id
+      name
+      email
+      profile_picture
     }
   }
 `;

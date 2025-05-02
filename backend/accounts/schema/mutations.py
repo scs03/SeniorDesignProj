@@ -1,46 +1,50 @@
 import strawberry
-from accounts.schema.types import UserType
-from accounts.models import CustomUser
 from typing import Optional
 from strawberry.types import Info
-from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from strawberry.file_uploads import Upload
+
+from accounts.models import CustomUser
+from accounts.schema.types import UserType
+from groups.models import Submission
 
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    def register_user(self, name: str, email: str, password: str, role: str) -> UserType:
-        if CustomUser.objects.filter(email=email).exists():
-            raise Exception("A user with this email already exists.")
+    def update_submission(
+        self,
+        info: Info,
+        submission_id: int,
+        human_grade: Optional[float] = None,
+        feedback: Optional[str] = None
+    ) -> str:
+        user = info.context.request.user
+        if not user.is_authenticated or user.role != "teacher":
+            raise Exception("Only teachers can update submissions.")
 
-        user = CustomUser.objects.create_user(
-            name=name,
-            email=email,
-            password=password,
-            role=role
-        )
+        try:
+            submission = Submission.objects.get(id=submission_id, assignment__class_assigned__teacher=user)
+        except Submission.DoesNotExist:
+            raise Exception("Submission not found or not owned by your class.")
 
-        return UserType.from_instance(user)
+        # UPDATE FIELDS
+        if human_grade is not None:
+            submission.human_grade = human_grade
+        if feedback is not None:
+            submission.feedback = feedback
 
-    @strawberry.mutation
-    def login(self, info: Info, email: str, password: str) -> Optional[UserType]:
-        request = info.context["request"]
-        user = authenticate(request, email=email, password=password)
-
-        if user is not None:
-            django_login(request, user)
-            return UserType(
-                user_id=user.user_id,
-                name=user.name,
-                email=user.email,
-                role=user.role,
-                created_at=user.created_at,
-            )
-        return None
-
+        submission.save()
+        return "Submission updated successfully."
 
     @strawberry.mutation
-    def logout(self, info: Info) -> bool:
-        request = info.context["request"]
-        django_logout(request)
-        return True
+    def upload_profile_picture(self, info: Info, file: Upload) -> UserType:
+        request = info.context.request
+        user: CustomUser = request.user
+
+        if not user.is_authenticated:
+            raise Exception("You must be logged in to upload a profile picture.")
+
+        # ✅ Save the uploaded file using the correct attribute
+        user.profile_picture.save(file.name, file.file, save=True)
+
+        return user

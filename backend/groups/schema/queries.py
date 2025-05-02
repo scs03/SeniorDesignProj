@@ -8,7 +8,6 @@ from groups.schema.types import ClassType, AssignmentType, SubmissionMeta
 from accounts.schema.types import UserType
 
 
-
 @strawberry.type
 class Query:
 
@@ -21,13 +20,7 @@ class Query:
                 id=c.id,
                 name=c.name,
                 created_at=c.created_at,
-                teacher=UserType(
-                    user_id=c.teacher.user_id,
-                    name=c.teacher.name,
-                    email=c.teacher.email,
-                    role=c.teacher.role,
-                    created_at=c.teacher.created_at,
-                ),
+                teacher=UserType.from_instance(c.teacher),  # ✅ Use from_instance() to handle profile_picture
                 assignments=[
                     AssignmentType(
                         id=a.id,
@@ -38,7 +31,7 @@ class Query:
                     )
                     for a in c.assignments.all()
                 ],
-                student_count=c.students.count(),  # 🔥 Count students here
+                student_count=c.students.count(),
             )
             for c in classes
         ]
@@ -62,9 +55,9 @@ class Query:
                 student_id=sub.student.user_id,
                 student_name=sub.student.name,
                 assignment_id=sub.assignment.id,
-                assignment_name=sub.assignment.name,  # ✅ ensure this exists
+                assignment_name=sub.assignment.name,
                 class_id=sub.assignment.class_assigned.id,
-                class_name=sub.assignment.class_assigned.name,  # ✅ ensure this exists
+                class_name=sub.assignment.class_assigned.name,
                 submission_date=sub.submission_date.isoformat(),
                 ai_grade=sub.ai_grade,
                 human_grade=sub.human_grade,

@@ -1,6 +1,7 @@
 import strawberry
 from accounts.models import CustomUser
 from datetime import datetime
+from typing import Optional
 
 @strawberry.type
 class UserType:
@@ -9,6 +10,7 @@ class UserType:
     email: str
     role: str
     created_at: datetime
+    profile_picture: Optional[str]  # ✅ Add this line
 
     @staticmethod
     def from_instance(user) -> "UserType":
@@ -16,10 +18,14 @@ class UserType:
         if isinstance(created_at, str):  # guard against corrupted field
             created_at = datetime.fromisoformat(created_at)
 
+        # Convert profile_picture to URL string
+        profile_picture_url = user.profile_picture.url if user.profile_picture else None
+
         return UserType(
             user_id=user.user_id,
             name=user.name,
             email=user.email,
             role=user.role,
             created_at=created_at,
-        )   
+            profile_picture=profile_picture_url,  # ✅ Add this line too
+        )

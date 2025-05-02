@@ -4,8 +4,9 @@ import { Home, Codepen, LogOut, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useMutation } from "@apollo/client";
-import { LOGOUT_MUTATION } from "@/services/user_mutations";
+import { LOGOUT_MUTATION, UPLOAD_PROFILE_PICTURE } from "@/services/user_mutations";
 import { useSession } from "@/hooks/useSession";
+import { useRef } from "react";
 
 import {
   Sidebar,
@@ -23,9 +24,16 @@ export function AppSidebar() {
   const router = useRouter();
   const isTeacher = pathname.includes("/dashboard/teacher");
   const userRole: "teacher" | "student" = isTeacher ? "teacher" : "student";
-  const user = useSession() as { name: string; user_id: string; role: string } | null;
+  const user = useSession() as {
+    name: string;
+    user_id: string;
+    role: string;
+    profile_picture?: string;
+  } | null;
 
   const [logout] = useMutation(LOGOUT_MUTATION);
+  const [uploadProfilePicture] = useMutation(UPLOAD_PROFILE_PICTURE);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleLogout = async () => {
     localStorage.removeItem("user");
@@ -33,45 +41,36 @@ export function AppSidebar() {
     router.push("/auth/signin");
   };
 
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    console.log("📸 Uploading file:", file);
+
+    try {
+      const res = await uploadProfilePicture({ variables: { file } });
+      console.log("📸 Mutation response:", res);
+      window.location.reload(); // Refresh after upload
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
+
   const teacherItems = [
-    {
-      title: "Dashboard",
-      url: "/dashboard/teacher",
-      icon: Home,
-    },
-    {
-      title: "Submissions",
-      url: "/dashboard/teacher/submissions",
-      icon: Codepen,
-    },
-    {
-      title: "Resources",
-      url: "/dashboard/teacher/resources",
-      icon: BookOpen,
-    },
-    {
-      title: "Students",
-      url: "/dashboard/teacher/students",
-      icon: Users,
-    },
+    { title: "Dashboard", url: "/dashboard/teacher", icon: Home },
+    { title: "Submissions", url: "/dashboard/teacher/submissions", icon: Codepen },
+    { title: "Resources", url: "/dashboard/teacher/resources", icon: BookOpen },
+    { title: "Students", url: "/dashboard/teacher/students", icon: Users },
   ];
 
   const studentItems = [
-    {
-      title: "Dashboard",
-      url: "/dashboard/student",
-      icon: Home,
-    },
-    {
-      title: "Assignments",
-      url: "/dashboard/student/assignments",
-      icon: BookOpen,
-    },
-    {
-      title: "Submissions",
-      url: "/dashboard/student/submissions",
-      icon: Codepen,
-    },
+    { title: "Dashboard", url: "/dashboard/student", icon: Home },
+    { title: "Assignments", url: "/dashboard/student/assignments", icon: BookOpen },
+    { title: "Submissions", url: "/dashboard/student/submissions", icon: Codepen },
   ];
 
   const items = userRole === "teacher" ? teacherItems : studentItems;
@@ -88,22 +87,42 @@ export function AppSidebar() {
             <SidebarGroupContent>
               {userRole === "teacher" && (
                 <div className="flex flex-col items-center py-6">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md">
+                  <div
+                    className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md relative group cursor-pointer"
+                    onClick={handleImageClick}
+                  >
                     <Image
-                      src="/placeholder-profile.jpg"
+                      src={
+                        user?.profile_picture
+                          ? `http://localhost:8000${user.profile_picture}?t=${Date.now()}`
+                          : "/placeholder-profile.jpg"
+                      }
                       alt="Teacher Profile"
                       width={96}
                       height={96}
-                      className="object-cover"
+                      className="object-cover group-hover:opacity-80 transition"
                     />
+                    <div className="absolute bottom-1 left-0 right-0 text-xs text-center text-blue-500 opacity-0 group-hover:opacity-100 transition">
+                      Click to update
+                    </div>
                   </div>
-                    <p className="mt-3 text-blue-700 font-medium">
+
+                  {/* ✅ Visible input for testing */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="mt-3"
+                  />
+
+                  <p className="mt-3 text-blue-700 font-medium">
                     {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : ""}
-                    </p>
+                  </p>
                   <p className="text-sm text-blue-500">id: {user?.user_id}</p>
                   <p className="text-sm text-blue-500 opacity-50">{user?.role}</p>
                 </div>
               )}
+
               <SidebarMenu className="mt-4">
                 {items.map((item) => {
                   const isActive = pathname === item.url;
@@ -133,7 +152,6 @@ export function AppSidebar() {
           </SidebarGroup>
         </div>
 
-        {/* Logout button */}
         <div className="p-6">
           <Button
             variant="outline"
