@@ -1,9 +1,11 @@
-"use client";
+'use client'
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { FileUp, UploadCloud } from "lucide-react";
 
 const TestUploadPage = () => {
   const [assignmentId, setAssignmentId] = useState("10");
@@ -45,48 +47,69 @@ const TestUploadPage = () => {
       const json = await res.json();
       if (json.errors) {
         console.error(json.errors);
-        setMessage("Upload failed.");
+        setMessage("❌ Upload failed. Please try again.");
       } else {
-        setMessage("Upload successful!");
+        setMessage("✅ Upload successful!");
       }
     } catch (err) {
       console.error(err);
-      setMessage("Upload failed.");
+      setMessage("❌ Upload failed. Please try again.");
     }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Test Assignment Upload</h1>
+    <div className="p-6 max-w-2xl mx-auto min-h-screen bg-blue-50 flex items-center justify-center">
+      <Card className="w-full bg-white border border-blue-200 shadow-sm">
+        <CardHeader className="bg-gradient-to-r from-blue-100 to-blue-50 border-b border-blue-100">
+          <div className="flex items-center gap-3">
+            <UploadCloud className="h-6 w-6 text-blue-600" />
+            <CardTitle className="text-blue-800 text-lg font-semibold">
+              Submit Your Assignment
+            </CardTitle>
+          </div>
+        </CardHeader>
 
-      <div className="space-y-2">
-        <Label htmlFor="assignmentId">Assignment ID</Label>
-        <Input
-          id="assignmentId"
-          type="number"
-          value={assignmentId}
-          onChange={(e) => setAssignmentId(e.target.value)}
-        />
-      </div>
+        <CardContent className="space-y-4 pt-4">
+          <div className="space-y-2">
+            <Label className="text-blue-700" htmlFor="assignmentId">Assignment ID</Label>
+            <Input
+              id="assignmentId"
+              type="number"
+              value={assignmentId}
+              onChange={(e) => setAssignmentId(e.target.value)}
+              className="border-blue-200 focus:ring-blue-500"
+            />
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="file">Upload File</Label>
-        <Input
-          id="file"
-          type="file"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-        />
-      </div>
+          <div className="space-y-2">
+            <Label className="text-blue-700" htmlFor="file">Upload File</Label>
+            <Input
+              id="file"
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="border-blue-200 focus:ring-blue-500"
+            />
+          </div>
+        </CardContent>
 
-      <Button
-        onClick={handleUpload}
-        disabled={!file || !assignmentId}
-        className="bg-blue-600 hover:bg-blue-700 text-white"
-      >
-        Submit Assignment
-      </Button>
+        <CardFooter className="bg-blue-50 border-t border-blue-100 px-6 py-4 flex flex-col gap-2">
+          <Button
+            onClick={handleUpload}
+            disabled={!file || !assignmentId}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <FileUp className="h-4 w-4 mr-2" />
+            Submit Assignment
+          </Button>
 
-      {message && <p className="text-sm mt-2">{message}</p>}
+          {message && (
+            <p className={`text-sm text-center ${message.includes("success") ? "text-green-600" : "text-red-600"}`}>
+              {message}
+            </p>
+          )}
+        </CardFooter>
+      </Card>
     </div>
   );
 };

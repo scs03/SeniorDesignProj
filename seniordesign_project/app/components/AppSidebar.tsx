@@ -144,7 +144,7 @@ export function AppSidebar() {
             <span className="font-medium">Logout</span>
           </Button>
           <div className="mt-4 text-xs text-center text-blue-400">
-            {userRole === "teacher" ? "Teacher Portal" : "Student Portal"} • v2.1.0
+            {userRole === "teacher" ? "Teacher Portal" : "Student Portal"} • v0.1.0
           </div>
         </div>
       </SidebarContent>
