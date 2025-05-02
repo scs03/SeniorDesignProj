@@ -66,17 +66,69 @@ const TeacherHomePage = () => {
   }
 
   const handleSubmit = async () => {
-    await createAssignment({
+    const formData = new FormData();
+  
+    const operations = JSON.stringify({
+      query: `
+        mutation CreateAssignment(
+          $classId: Int!
+          $name: String!
+          $dueDate: DateTime
+          $prompt: String
+          $rubric_file: Upload
+        ) {
+          create_assignment(
+            class_id: $classId
+            name: $name
+            due_date: $dueDate
+            prompt: $prompt
+            rubric_file: $rubric_file
+          )
+        }
+      `,
       variables: {
         classId: parseInt(form.classId, 10),
         name: form.name,
         dueDate: form.dueDate,
         prompt: form.prompt,
+        rubric_file: null,
       },
-    })
-    setOpenDialog(false)
-    refetch()
-  }
+    });
+  
+    const map = JSON.stringify({
+      "0": ["variables.rubric_file"],
+    });
+  
+    formData.append("operations", operations);
+    formData.append("map", map);
+    if (form.rubricFile) {
+      formData.append("0", form.rubricFile);
+    }
+  
+    try {
+      const res = await fetch("http://localhost:8000/graphql", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+  
+      const json = await res.json();
+      console.log("📥 CreateAssignment response:", json);
+  
+      setOpenDialog(false);
+      setForm({
+        classId: "",
+        name: "",
+        dueDate: "",
+        prompt: "",
+        rubricFile: null,
+      });
+      refetch();
+    } catch (err) {
+      console.error("❌ CreateAssignment error:", err);
+    }
+  };
+  
 
   const handleStudentSubmit = async () => {
     if (!studentDialogOpenId || !studentIdInput) return

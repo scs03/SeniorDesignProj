@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb, Calendar } from "lucide-react";
-import { SUBMIT_ASSIGNMENT } from "@/services/user_mutations";
+import { useQuery } from "@apollo/client";
+import { GET_ASSIGNMENT_BY_ID } from "@/services/user_queries";
 
 interface AssignmentDialogProps {
   assignment: any;
@@ -29,20 +30,37 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
   onSubmit,
 }) => {
   const [submissionFile, setSubmissionFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (submissionFile) {
-      onSubmit(assignment.id, submissionFile);
-      setOpenDialogId(null);
-      setSubmissionFile(null);
-    }
-  };
+  const isOpen = openDialogId === assignment.id;
+
+  const { data, loading, error } = useQuery(GET_ASSIGNMENT_BY_ID, {
+    variables: { assignment_id: parseInt(assignment.id, 10) },
+    skip: !isOpen,
+  });
+
+
+const handleSubmit = async () => {
+  if (!submissionFile) return;
+
+  setIsSubmitting(true); // 🟡 Set loading
+  try {
+    await onSubmit(parseInt(assignment.id, 10), submissionFile);
+    setSubmissionFile(null);
+    setOpenDialogId(null); // ✅ Only close *after* submit finishes
+  } catch (err) {
+    console.error("Submission failed:", err);
+    // optionally show toast or error UI
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+  const assignmentData = data?.assignment_by_id;
 
   return (
-    <Dialog
-      open={openDialogId === assignment.id}
-      onOpenChange={() => setOpenDialogId(openDialogId === assignment.id ? null : assignment.id)}
-    >
+    <Dialog open={isOpen} onOpenChange={() => setOpenDialogId(isOpen ? null : assignment.id)}>
       <DialogTrigger asChild>
         <Card
           onClick={() => setOpenDialogId(assignment.id)}
@@ -61,43 +79,59 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
           </CardHeader>
         </Card>
       </DialogTrigger>
+
       <DialogContent className="bg-white border-blue-200 max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-blue-800 text-lg">{assignment.name}</DialogTitle>
+          <DialogTitle className="text-blue-800 text-lg">
+            {assignmentData?.name || "Assignment Details"}
+          </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 mt-2">
-          <div>
-            <Label className="text-blue-700">Prompt</Label>
-            <p className="text-blue-600 text-sm mt-1 whitespace-pre-line">
-              {assignment.prompt || "No prompt provided."}
-            </p>
-          </div>
-          {assignment.rubric_file && (
+
+        {loading ? (
+          <p className="text-blue-600 text-sm">Loading assignment details...</p>
+        ) : error || !assignmentData ? (
+          <p className="text-red-500 text-sm">Failed to load assignment data.</p>
+        ) : (
+          <div className="space-y-4 mt-2">
             <div>
-              <Label className="text-blue-700">Rubric</Label>
-              <iframe
-                src={assignment.rubric_file}
-                className="w-full h-64 mt-2 border border-blue-200 rounded"
-                title="Rubric PDF Preview"
+              <Label className="text-blue-700">Prompt</Label>
+              <p className="text-blue-600 text-sm mt-1 whitespace-pre-line">
+                {assignmentData.prompt || "No prompt provided."}
+              </p>
+            </div>
+
+            {assignmentData.rubric_file && (
+              <div>
+                <Label className="text-blue-700">Rubric</Label>
+                <iframe
+  src={`http://localhost:8000${assignmentData.rubric_file}?t=${Date.now()}`} // bust cache
+  className="w-full h-64 mt-2 border border-blue-200 rounded"
+  title="Rubric PDF Preview"
+/>
+
+
+              </div>
+            )}
+
+            <div>
+              <Label className="text-blue-700">Upload your submission</Label>
+              <Input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setSubmissionFile(e.target.files?.[0] || null)}
               />
             </div>
-          )}
-          <div>
-            <Label className="text-blue-700">Upload your submission</Label>
-            <Input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setSubmissionFile(e.target.files?.[0] || null)}
-            />
+
+            <Button
+              onClick={handleSubmit}
+              disabled={!submissionFile || isSubmitting}
+              className="bg-blue-600 text-white hover:bg-blue-700 w-full"
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!submissionFile}
-            className="bg-blue-600 text-white hover:bg-blue-700 w-full"
-          >
-            Submit
-          </Button>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );

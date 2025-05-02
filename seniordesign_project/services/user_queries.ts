@@ -40,6 +40,7 @@ export const GET_ALL_SUBMISSIONS = gql`
       human_grade
       feedback
       graded_by_ai
+      submission_file
     }
   }
 `;
@@ -78,6 +79,20 @@ export const GET_STUDENT_CLASSES = gql`
         created_at
         rubric_file 
       }
+    }
+  }
+`;
+
+
+export const GET_ASSIGNMENT_BY_ID = gql`
+  query GetAssignmentById($assignment_id: Int!) {
+    assignment_by_id(assignment_id: $assignment_id) {
+      id
+      name
+      prompt
+      due_date
+      created_at
+      rubric_file
     }
   }
 `;
