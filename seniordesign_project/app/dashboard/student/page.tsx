@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_STUDENT_CLASSES } from "@/services/user_queries";
 import { useSession } from "@/hooks/useSession";
-import { BookOpen } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BookOpen, Calendar, FileText, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import AssignmentDialog from "@/app/components/AssignmentDialog";
 
 const StudentDashboard = () => {
@@ -76,12 +77,18 @@ const StudentDashboard = () => {
   const studentClasses = data?.student_classes || [];
 
   return (
-    <div className="p-6 w-full max-w-5xl mx-auto space-y-6 bg-blue-50 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-blue-800">
-          Welcome, {user.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : "Student"}!
-        </h1>
-        <p className="text-blue-600">Here are your upcoming assignments.</p>
+    <div className="p-6 w-full max-w-7xl mx-auto space-y-6 bg-blue-50 min-h-screen">
+      <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm border border-blue-100">
+        <div>
+          <h1 className="text-2xl font-semibold text-blue-800">
+            Welcome, {user.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : "Student"}!
+          </h1>
+          <p className="text-blue-600">Here are your classes and upcoming assignments</p>
+        </div>
+        <div className="bg-blue-50 p-2 rounded-md border border-blue-100">
+          <span className="text-blue-700 font-medium">Student ID: </span>
+          <span className="text-blue-600">{user.user_id}</span>
+        </div>
       </div>
 
       {studentClasses.length === 0 ? (
@@ -89,7 +96,13 @@ const StudentDashboard = () => {
           <CardContent className="flex flex-col items-center justify-center py-10">
             <BookOpen className="h-12 w-12 text-blue-400 mb-2" />
             <p className="text-blue-600 font-medium">No classes enrolled</p>
-            <p className="text-blue-400 text-sm mt-1">Join a class to view assignments.</p>
+            <p className="text-blue-400 text-sm mt-1">Ask your teacher for a class ID to join.</p>
+            <Button 
+              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => alert("Join class feature coming soon!")}
+            >
+              Join a Class
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -109,27 +122,80 @@ const StudentDashboard = () => {
               </CardHeader>
               <CardContent className="space-y-3 p-4">
                 <h3 className="text-blue-700 font-medium flex items-center">
+                  <FileText className="h-4 w-4 mr-2" />
                   Assignments
                 </h3>
                 {cls.assignments.length === 0 ? (
-                  <p className="text-blue-500 text-sm">No assignments yet</p>
+                  <div className="text-center py-6 bg-blue-50 rounded-lg border border-dashed border-blue-200">
+                    <Calendar className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                    <p className="text-sm text-blue-600">No assignments yet</p>
+                    <p className="text-xs text-blue-500">Check back later for new assignments</p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
-                    {cls.assignments.map((assignment: any) => (
-                      <AssignmentDialog
-                        key={assignment.id}
-                        assignment={assignment}
-                        openDialogId={openDialogId}
-                        setOpenDialogId={setOpenDialogId}
-                        onSubmit={handleSubmit}
-                      />
-                    ))}
+                    {cls.assignments.map((assignment: any) => {
+                      const hasSubmission = assignment.submission && assignment.submission.file_path;
+                      const isGraded = hasSubmission && assignment.submission.grade !== null;
+                      
+                      return (
+                        <Card key={assignment.id} className="w-full border border-blue-100 shadow-none hover:bg-blue-50 transition-colors duration-200">
+                          <CardHeader className="p-3">
+                            <div className="flex justify-between items-center">
+                              <CardTitle className="text-base text-blue-700 flex items-center">
+                                {hasSubmission ? (
+                                  isGraded ? (
+                                    <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                                  ) : (
+                                    <AlertCircle className="h-4 w-4 mr-2 text-yellow-500" />
+                                  )
+                                ) : (
+                                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                                )}
+                                {assignment.name}
+                              </CardTitle>
+                              <span className="flex items-center text-xs text-blue-500"> 
+                                <Calendar className="h-3 w-3 mr-1" />
+                                Due: {new Date(assignment.due_date).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </CardHeader>
+                          <CardFooter className="p-2 bg-blue-50 border-t border-blue-100">
+                            <Button 
+                              variant="outline" 
+                              className="text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 text-sm w-full"
+                              onClick={() => setOpenDialogId(assignment.id)}
+                            >
+                              {hasSubmission ? (
+                                isGraded ? "View Feedback" : "View Submission"
+                              ) : "Submit Assignment"}
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
+              <CardFooter className="bg-blue-50 py-2 px-4 border-t border-blue-100">
+                <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700 text-sm w-full">
+                  View Class Details
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </div>
+      )}
+      
+      {studentClasses.map((cls: any) =>
+        cls.assignments.map((assignment: any) => (
+          <AssignmentDialog
+            key={assignment.id}
+            assignment={assignment}
+            openDialogId={openDialogId}
+            setOpenDialogId={setOpenDialogId}
+            onSubmit={handleSubmit}
+          />
+        ))
       )}
     </div>
   );
