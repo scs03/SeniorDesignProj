@@ -1,10 +1,6 @@
-Here is your status report reformatted to match the structure and tone of the meeting notes:
-
----
-
-**Meeting Notes**
-**Date:** April 25th, 2025
-**Attendees:**
+Meeting Notes
+Date: April 25th, 2025
+Attendees:
 
 * Dr. Alagar
 * Thennannamalai Malligarjunan
@@ -14,33 +10,33 @@ Here is your status report reformatted to match the structure and tone of the me
 * Saumya Kapoor
 * Nihanth Attaluri
 
-**Duration:** \~45 minutes
-**Platform:** Microsoft Teams
+Duration: \~45 minutes
+Platform: Microsoft Teams
 
 ---
 
-### **Progress Updates (Weekly Status Report)**
+Progress Updates (Weekly Status Report)
 
-**Vikram Rohit Ramachandra**
+Vikram Rohit Ramachandra
 Worked with Saumya to implement GraphQL mutations and queries for teachers to create classes and add students. Collaboratively tested if students could view assigned classes and related assignments. Contributed to backend schema changes that enable student access to class information.
-**Next Steps:** Finalize integration tasks and ensure full readiness for the upcoming demo, including AI functionality.
+Next Steps: Finalize integration tasks and ensure full readiness for the upcoming demo, including AI functionality.
 
-**Sriram Sendhil**
+Sriram Sendhil
 Enhanced UI on the Teacher Home Page, refining layout and styling. Improved class cards with dropdowns and action buttons. Integrated the assignment creation modal for real-time updates.
 Developed the `TeacherSubmissions` view for organizing submissions by Class → Assignment → Students. Created a grading modal for human feedback, grading type display (AI/manual), and backend persistence. Connected frontend to the `update_submission` mutation, resolved data sync bugs, and ensured accurate backend updates.
-**Next Steps:** Add file preview support, rubric-based grading inputs, submission filtering, and grading history display.
+Next Steps: Add file preview support, rubric-based grading inputs, submission filtering, and grading history display.
 
-**Sruti Karthikeyan**
+Sruti Karthikeyan
 Trained an initial trait-based essay scoring model using Flan-T5-small and then upgraded to Flan-T5-base for better accuracy on edge cases. Introduced GPT API validation to cross-check model outputs. Built a fallback system for GPT availability and logic to resolve score disagreements.
-**Next Steps:** Upload the model to Hugging Face with Nihanth and complete frontend integration ahead of the demo.
+Next Steps: Upload the model to Hugging Face with Nihanth and complete frontend integration ahead of the demo.
 
-**Saumya Kapoor**
+Saumya Kapoor
 Developed queries to retrieve enrolled classes and class-specific assignments for students. Updated backend schema accordingly and added a mutation for student assignment submission.
-**Next Steps:** Collaborate with Vikram and Sriram on integrating student views and complete end-to-end testing.
+Next Steps: Collaborate with Vikram and Sriram on integrating student views and complete end-to-end testing.
 
-🧪 **Nihanth Attaluri**
+Nihanth Attaluri
 Refactored output data for compatibility with the new model and began integrating Prometheus as a validation layer.
-**Next Steps:** Finalize integration work and ensure system is demo-ready.
+Next Steps: Finalize integration work and ensure system is demo-ready.
 
 ---
 
