@@ -77,18 +77,12 @@ const StudentDashboard = () => {
   const studentClasses = data?.student_classes || [];
 
   return (
-    <div className="p-6 w-full max-w-7xl mx-auto space-y-6 bg-blue-50 min-h-screen">
-      <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm border border-blue-100">
-        <div>
-          <h1 className="text-2xl font-semibold text-blue-800">
-            Welcome, {user.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : "Student"}!
-          </h1>
-          <p className="text-blue-600">Here are your classes and upcoming assignments</p>
-        </div>
-        <div className="bg-blue-50 p-2 rounded-md border border-blue-100">
-          <span className="text-blue-700 font-medium">Student ID: </span>
-          <span className="text-blue-600">{user.user_id}</span>
-        </div>
+    <div className="p-6 w-full mx-auto space-y-6 bg-blue-50 min-h-screen">
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-blue-800">
+          Welcome, {user.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : "Student"}!
+        </h1>
+        <p className="text-blue-600">Here are your upcoming assignments.</p>
       </div>
 
       {studentClasses.length === 0 ? (

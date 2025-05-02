@@ -63,8 +63,8 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: "Assignments",
-      url: "/dashboard/student/assignments",
+      title: "Grades",
+      url: "/dashboard/student/grades",
       icon: BookOpen,
     },
     {
