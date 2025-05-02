@@ -181,11 +181,6 @@ class Mutation:
             except Exception as e:
                 print(f"Grading pipeline error: {e}")
 
-        submission = Submission.objects.create(
-        assignment=assignment,
-        student=user,
-        submission_file=relative_path,
-        )
         print("✅ Submission saved to DB:", submission)
 
         return f"Submission uploaded successfully to {relative_path}"

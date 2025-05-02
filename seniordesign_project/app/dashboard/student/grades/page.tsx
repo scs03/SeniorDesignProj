@@ -14,6 +14,38 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
+// Function to determine grade color based on value
+const getGradeColorClass = (grade: string | number | null | undefined): string => {
+  if (grade === null || grade === undefined) return "text-blue-700";
+  
+  // Convert to number if it's a string
+  const numericGrade = typeof grade === 'string' ? parseFloat(grade) : grade;
+  
+  // Check if it's a percentage (out of 100)
+  if (numericGrade >= 0 && numericGrade <= 100) {
+    if (numericGrade >= 90) return "text-emerald-600";
+    if (numericGrade >= 80) return "text-green-600";
+    if (numericGrade >= 70) return "text-lime-600";
+    if (numericGrade >= 60) return "text-yellow-600";
+    if (numericGrade >= 50) return "text-amber-600";
+    return "text-red-600";
+  }
+  
+  // Check if it's a letter grade
+  if (typeof grade === 'string') {
+    const letterGrade = grade.toUpperCase();
+    if (letterGrade === 'A' || letterGrade.startsWith('A+')) return "text-emerald-600";
+    if (letterGrade === 'A-' || letterGrade === 'B+' || letterGrade === 'B') return "text-green-600";
+    if (letterGrade === 'B-' || letterGrade === 'C+' || letterGrade === 'C') return "text-lime-600";
+    if (letterGrade === 'C-' || letterGrade === 'D+' || letterGrade === 'D') return "text-yellow-600";
+    if (letterGrade === 'D-') return "text-amber-600";
+    if (letterGrade === 'F') return "text-red-600";
+  }
+  
+  // Default color for any other type of grade
+  return "text-blue-700";
+};
+
 const StudentGrades = () => {
   const user = useSession() as { user_id: string; name: string } | null;
 
@@ -60,7 +92,7 @@ const StudentGrades = () => {
   });
 
   return (
-    <div className="p-6 w-full  mx-auto space-y-6 bg-blue-50 min-h-screen">
+    <div className="p-6 w-full mx-auto space-y-6 bg-blue-50 min-h-screen">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-blue-800">
           Your Grades, {user.name}
@@ -91,6 +123,9 @@ const StudentGrades = () => {
                   : sub.ai_grade !== null
                   ? "Graded by AI"
                   : "Not Graded";
+                
+                // Get the appropriate color class for the grade
+                const gradeColorClass = getGradeColorClass(grade);
 
                 return (
                   <div key={sub.assignment_id} className="flex justify-between items-center p-3 bg-blue-50 rounded-md border border-blue-100">
@@ -99,7 +134,7 @@ const StudentGrades = () => {
                       <p className="text-sm text-blue-500">Assignment ID: {sub.assignment_id}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-blue-700 text-lg">{grade ?? "—"}</p>
+                      <p className={`font-semibold ${gradeColorClass} text-lg`}>{grade ?? "—"}</p>
                       <Badge className={
                         label === "Graded by Teacher"
                           ? "bg-green-100 text-green-700 border-green-200"

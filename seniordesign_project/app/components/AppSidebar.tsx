@@ -76,6 +76,17 @@ export function AppSidebar() {
 
   const items = userRole === "teacher" ? teacherItems : studentItems;
 
+  const getRoleBadgeStyle = (role: string): string => {
+    if (role === "teacher") {
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    }
+    return "bg-green-100 text-green-800 border-green-200";
+  };
+
+  const getRoleLabel = (role: string): string => {
+    return role?.charAt(0).toUpperCase() + role?.slice(1) || '';
+  };
+
   return (
     <Sidebar className="bg-gradient-to-b from-blue-50 to-blue-100 border-r border-blue-200">
       <SidebarContent className="flex flex-col justify-between h-full">
@@ -91,17 +102,19 @@ export function AppSidebar() {
                   <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 shadow-md">
                     <Image
                       src="/placeholder-profile.jpg"
-                      alt="Teacher Profile"
+                      alt="Profile Picture"
                       width={96}
                       height={96}
                       className="object-cover"
                     />
                   </div>
-                    <p className="mt-3 text-blue-700 font-medium">
+                  <p className="mt-3 text-blue-700 font-medium">
                     {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) : ""}
-                    </p>
-                  <p className="text-sm text-blue-500">id: {user?.user_id}</p>
-                  <p className="text-sm text-blue-500 opacity-50">{user?.role}</p>
+                  </p>
+                  <p className="text-sm text-blue-500 mb-2">ID: {user?.user_id}</p>
+                  <div className={`${getRoleBadgeStyle(user?.role)} px-3 py-1 text-xs font-medium rounded-full border transition-colors duration-200`}>
+                    {getRoleLabel(user?.role)}
+                  </div>
                 </div>
               )}
               <SidebarMenu className="mt-4">
