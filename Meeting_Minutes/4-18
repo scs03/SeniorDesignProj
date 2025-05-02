@@ -1,0 +1,70 @@
+---
+
+**Meeting Notes**
+**Date:** April 18th, 2025
+**Attendees:**
+
+* Thennannamalai Malligarjunan
+* Vikram Rohit Ramachandra
+* Sriram Sendhil
+* Sruti Karthikeyan
+* Saumya Kapoor
+* Nihanth Attaluri
+
+**Duration:** \~45 minutes
+**Platform:** Microsoft Teams
+
+---
+
+### **Progress Updates (Weekly Status Report)**
+
+**Saumya Kapoor**
+Worked on implementing an "Add Assignment" button on the Teacher Submissions page, enabling teachers to create new assignments with fields for assignment name, rubric submission, and additional comments. Also collaborated with Vikram to add a profile icon for teachers.
+**Next Steps:** Transition from hardcoded values to database-driven inputs.
+
+**Vikram Rohit Ramachandra**
+Created a pop-up window on the Teacher Submissions page to display a list of students along with their grades, offering teachers a clearer view of class performance. Also worked with Saumya to integrate the profile icon for teachers.
+**Next Steps:** Continue replacing hardcoded content with values retrieved from the database.
+
+**Sriram Sendhil**
+Added multiple backend mutations and queries:
+
+* `addStudentsToClass` (restricted to teachers and scoped to their classes)
+* `submitAssignment` (for students, one submission per assignment)
+* `myClasses` (to let students see their enrolled classes)
+* `myAssignments` (for students to view all class assignments)
+  **Next Steps:** Begin frontend integration and set up user session handling.
+
+**Sruti Karthikeyan**
+Finalized a working pipeline for trait-based essay scoring using the ASAP AES dataset. Enhanced prompts with detailed rubric descriptions to clarify score breakdowns and retrained the Flan-T5 model, improving its ability to distinguish essay quality.
+**Next Steps:** Refine scoring reliability through improved training data and rubric phrasing. Begin integration of parsed rubric information with Nihanth.
+
+**Nihanth Attaluri**
+Connected the base model to Hugging Face and successfully uploaded it to their inference repository. Adjusted essay parsing output and trait formatting to match model input expectations and set up the API route to interface with Hugging Face.
+**Next Steps:** Finalize passing essay text and trait data into the deployed Hugging Face model for live inference.
+
+---
+
+###  **To-Do List for This Week**
+
+**For Vikram & Saumya:**
+
+* Replace placeholder UI content with dynamic values from the backend.
+* Continue refining the teacher dashboard and profile features.
+
+**For Sriram:**
+
+* Integrate backend mutations and queries with frontend UI.
+* Set up session management for user authentication and role-based views.
+
+**For Sruti & Nihanth:**
+
+* Refine and test rubric parsing integration.
+* Begin full-stack testing of essay grading workflow using Hugging Face model.
+
+**For Everyone:**
+
+* Begin coordinating demo scenarios based on implemented features.
+* Continue syncing frontend/backend development cycles for smoother integration.
+
+Would you like this exported to a downloadable format or compiled into a larger weekly report document?
