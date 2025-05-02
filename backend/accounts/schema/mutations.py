@@ -8,6 +8,10 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from typing import Optional
 from strawberry.types import Info
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from strawberry.file_uploads import Upload
+from graphql import GraphQLError
+from strawberry.file_uploads import Upload
+
 
 
 @strawberry.type
@@ -52,7 +56,17 @@ class Mutation:
             )
         return None
 
+    @strawberry.mutation
+    def update_profile_picture(self, info: Info, file: Upload) -> UserType:
+        user = info.context.request.user
 
+        if user.is_anonymous:
+            raise GraphQLError("Authentication required")
+
+        user.profile_picture.save(file.name, file, save=True)
+        return user
+
+    
     @strawberry.mutation
     def logout(self, info: Info) -> bool:
         request = info.context["request"]
