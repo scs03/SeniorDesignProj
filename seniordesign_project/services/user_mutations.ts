@@ -12,6 +12,13 @@ export const LOGIN_MUTATION = gql`
   }
 `;
 
+
+export const SUBMIT_ASSIGNMENT = gql`
+  mutation SubmitAssignment($assignment_id: Int!, $submission_file: Upload!) {
+    submit_assignment(assignment_id: $assignment_id, submission_file: $submission_file)
+  }
+`;
+
 export const LOGOUT_MUTATION = gql`
   mutation Logout {
     logout

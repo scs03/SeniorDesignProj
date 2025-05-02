@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 const TeacherSubmissions = () => {
   const { data, loading, error, refetch } = useQuery(GET_ALL_SUBMISSIONS);
+  console.log("GET_ALL_SUBMISSIONS → data:", data);
   const [updateSubmission] = useMutation(UPDATE_SUBMISSION);
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
   const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
@@ -63,6 +64,7 @@ const TeacherSubmissions = () => {
         feedback: sub.feedback,
         graded_by_ai: sub.graded_by_ai,
         status: sub.graded_by_ai || sub.human_grade !== null ? "Graded" : "Submitted",
+        submission_file: sub.submission_file,
       });
     });
 
@@ -202,7 +204,13 @@ const TeacherSubmissions = () => {
         ))
       )}
 
-      <Dialog open={!!selectedSubmission} onOpenChange={() => setSelectedSubmission(null)}>
+<Dialog
+  open={!!selectedSubmission}
+  onOpenChange={() => {
+    console.log("DEBUG — File path:", selectedSubmission?.submission_file);
+    setSelectedSubmission(null);
+  }}
+>
         <DialogContent className="w-full max-w-5xl bg-white">
           <DialogHeader>
             <DialogTitle className="text-xl text-blue-800">
@@ -211,7 +219,17 @@ const TeacherSubmissions = () => {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div className="border p-4 rounded-md h-[75vh] overflow-y-auto">
-              <p className="text-blue-600">PDF/Text preview goes here (future feature)</p>
+            {selectedSubmission?.submission_file ? (
+  <iframe
+    src={`http://localhost:8000/${selectedSubmission.submission_file}?t=${Date.now()}`}
+    className="w-full h-full border rounded"
+    title="Student Submission Preview"
+  />
+) : (
+  <p className="text-blue-600">No file submitted</p>
+)}
+
+
             </div>
             <div className="space-y-4">
               <p><strong>AI Grade:</strong> {selectedSubmission?.ai_grade ?? "N/A"}</p>

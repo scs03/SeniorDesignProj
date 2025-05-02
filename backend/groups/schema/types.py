@@ -10,6 +10,7 @@ class AssignmentType:
     prompt: Optional[str]
     due_date: datetime
     created_at: datetime
+    rubric_file: Optional[str]
 
 @strawberry.type
 class ClassType:
@@ -35,3 +36,4 @@ class SubmissionMeta:
     human_grade: Optional[float]
     feedback: Optional[str]
     graded_by_ai: bool
+    submission_file: Optional[str]
