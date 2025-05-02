@@ -28,7 +28,7 @@ export async function POST(req) {
     const formData = new FormData();
     formData.append("file", new Blob([fileBuffer]), "uploaded.pdf");
 
-    const response = await axios.post("http://localhost:8000/extract-text/", formData, {
+    const response = await axios.post("http://localhost:8001/extract-text/", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

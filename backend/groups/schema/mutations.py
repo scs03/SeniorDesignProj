@@ -12,7 +12,13 @@ import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
+import sys
+import os
+current_dir = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+sys.path.append(project_root)
 
+from lib.auto_grader import trigger_auto_grading_pipeline
 
 
 @strawberry.type
@@ -25,7 +31,7 @@ class Mutation:
         name: str,
         due_date: Optional[datetime] = None,
         prompt: Optional[str] = None,
-        rubric_image: Optional[Upload] = None,
+        rubric_file: Optional[Upload] = None,
     ) -> str:
         request = info.context.request
         user = request.user
@@ -49,15 +55,25 @@ class Mutation:
         if due_date < now_dt:
             raise Exception("Due date must be in the future.")
 
-        Assignment.objects.create(
-            class_assigned=class_obj,
-            name=name,
-            due_date=due_date,
-            prompt=prompt,
-            rubric_image=rubric_image,
-        )
-
-        return f"Assignment '{name}' created successfully."
+        existing = Assignment.objects.filter(class_assigned=class_obj, name=name).first()
+        if existing:
+            if rubric_file and existing.rubric_file:
+                existing.rubric_file.delete()
+            existing.due_date = due_date
+            existing.prompt = prompt
+            if rubric_file:
+                existing.rubric_file = rubric_file
+            existing.save()
+            return f"Assignment '{name}' updated successfully."
+        else:
+            Assignment.objects.create(
+                class_assigned=class_obj,
+                name=name,
+                due_date=due_date,
+                prompt=prompt,
+                rubric_file=rubric_file,
+            )
+            return f"Assignment '{name}' created successfully."
 
 
     @strawberry.mutation
@@ -117,12 +133,37 @@ class Mutation:
         relative_path = os.path.join("submissions", file_name)
         full_path = default_storage.save(relative_path, ContentFile(submission_file.read()))
 
-        # Save in DB
-        Submission.objects.create(
-            assignment=assignment,
-            student=user,
-            submission_file=relative_path,
-        )
+        # Check for existing submission and update it, or create a new one
+        submission = Submission.objects.filter(assignment=assignment, student=user).first()
+
+        if submission:
+            submission.submission_file = relative_path
+            submission.submission_date = now()
+            submission.human_grade = None
+            submission.ai_grade = None
+            submission.graded_by_ai = False
+            submission.feedback = None
+            submission.save()
+        else:
+            submission = Submission.objects.create(
+                assignment=assignment,
+                student=user,
+                submission_file=relative_path,
+            )
+
+        # Trigger AI grading pipeline after saving the submission
+        rubric_path = assignment.rubric_file.path if assignment.rubric_file else None
+        essay_path = default_storage.path(relative_path)
+
+        if rubric_path:
+            try:
+                trigger_auto_grading_pipeline(
+                    submission=submission,
+                    rubric_path=rubric_path,
+                    essay_path=essay_path
+                )
+            except Exception as e:
+                print(f"Grading pipeline error: {e}")
 
         return f"Submission uploaded successfully to {relative_path}"
 
@@ -182,5 +223,3 @@ class Mutation:
 
         submission.save()
         return "Submission updated successfully."
-
-

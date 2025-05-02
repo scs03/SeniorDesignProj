@@ -2,6 +2,8 @@ import { OpenAI } from "openai";
 import { NextResponse } from "next/server";
 
 // Optional: declare that this route does not parse the body
+// If you are *not* using this for file uploads elsewhere and only sending JSON,
+// you might consider removing this config block, although req.json() should work either way.
 export const config = {
   api: {
     bodyParser: false,
@@ -16,76 +18,125 @@ const openai = new OpenAI({
  * @param {import('next/server').NextRequest} req
  */
 export async function POST(req) {
-  try {
-    const body = await req.json();
-    const rubricText = body.rubricText;
+  // Log entry into the function
+  console.log("--- /api/parse-rubric POST request received ---");
 
-    if (!rubricText || rubricText.length < 10) {
+  try { // <<< OUTER TRY BLOCK STARTS >>>
+    // 1. Parse request body
+    console.log("[1] Attempting req.json()..."); // ADDED LOG
+    const body = await req.json();
+    // Simple log to confirm parsing, avoid logging potentially large/sensitive bodies fully in production
+    console.log("[2] req.json() completed. Body keys:", body ? Object.keys(body) : 'null/undefined'); // ADDED LOG
+
+    // 2. Extract rubricText
+    const rubricText = body.rubricText;
+    console.log("[3] rubricText received? Length:", rubricText?.length || "null"); // Modified log
+
+    // 3. Validate rubricText
+    console.log("[4] Validating rubricText..."); // ADDED LOG
+    const isRubricTextValid = !!rubricText && rubricText.length >= 10;
+    console.log(`[4a] Is rubricText valid (exists and length >= 10)? ${isRubricTextValid}`); // ADDED LOG
+
+    if (!isRubricTextValid) {
+      console.log("[!] Rubric text is invalid or too short. Returning 400."); // ADDED LOG
       return NextResponse.json({ error: "Rubric text is empty or invalid" }, { status: 400 });
     }
+    console.log("[5] Rubric text is valid."); // ADDED LOG
 
-    // Adjusted prompt to align with the required output structure
+    // 4. Construct prompt
     const prompt = `
-      Respond with ONLY the JSON object; do NOT include any explanatory text or markdown.
-      You are an expert grader and rubric analyzer. Given the rubric text below, identify the key writing traits or scoring dimensions used to evaluate student essays.
+You are an expert rubric interpreter. Given a text rubric, extract a list of key traits used to evaluate student essays.
 
-      For each identified trait, return a JSON-style structure with the following:
-      1. The trait name.
-      2. A description explaining the trait.
-      3. A scale with score ranges (0 to 5, for example) and feedback for each range.
-      4. An optional weight (between 0 and 1) representing how important the trait is.
+For each trait, return a JSON object where:
+- Keys are the names of the traits (e.g., "Ideas", "Organization").
+- Values are strings representing the rubric definition for that trait on a 0–3 point scale, formatted exactly like this (using escaped newlines):
+  "3 = Excellent performance...\\n2 = Adequate performance...\\n1 = Needs improvement...\\n0 = Inadequate..."
 
-      Format:
-      {
-        "trait_name": {
-          "description": "A brief explanation of the trait.",
-          "scale": {
-            "0": "Feedback for low score range.",
-            "1": "Feedback for medium score range.",
-            "2": "Feedback for high score range."
-          },
-          "weight": 0.2
-        },
-        ...
-      }
+Example output format:
+{
+  "Ideas": "3 = Strong ideas and details...\\n2 = Mostly clear...\\n1 = Weak or underdeveloped...\\n0 = No clear idea.",
+  "Organization": "3 = Clear and logical...\\n2 = Somewhat logical...\\n1 = Disorganized...\\n0 = No structure."
+}
 
-      Rubric:
-      """
-      ${rubricText}
-      """
+Strictly output ONLY the JSON object. Do not include any introductory text, explanations, comments, or markdown formatting like \`\`\`json.
+
+Rubric Text:
+"""
+${rubricText}
+"""
     `;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3,
-    });
+    // --- This is the point execution wasn't reaching before ---
+    console.log("[6] Sending request to OpenAI (gpt-4o)..."); // <<< YOUR PREVIOUSLY MISSING LOG >>>
 
-    const rawText = completion.choices?.[0]?.message?.content || "";
-    // Convert tuple-style `(0.0, 0.34, "text")` to JSON arrays `[0.0, 0.34, "text"]`
-    const jsonString = rawText.replace(/\((\s*[\d.]+\s*,\s*[\d.]+,\s*"[^"]*"\s*)\)/g, '[$1]');
-
-    console.log("GPT raw response:", rawText);
-
-    let parsed;
+    let rawText = "";
     try {
-      parsed = JSON.parse(jsonString);
-    } catch (e) {
-      console.error("Failed to parse GPT raw response as JSON:", e);
-      return NextResponse.json({ error: "Invalid JSON from GPT" }, { status: 500 });
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3, // Low temperature for more deterministic JSON structure
+        response_format: { type: "json_object" }, // Use OpenAI's JSON mode (RECOMMENDED)
+      });
+
+      rawText = completion.choices?.[0]?.message?.content || "";
+      console.log("[7] OpenAI response received. First 100 chars:", rawText.slice(0, 100)); // Modified log
+
+    } catch (completionError) {
+      console.error("[!] Error during OpenAI API completion:", completionError);
+      // Provide more detail if possible
+      const errorMessage = completionError instanceof Error ? completionError.message : "Unknown OpenAI error";
+      return NextResponse.json({ error: `OpenAI request failed: ${errorMessage}` }, { status: 500 });
     }
 
-    // Return the traits with names, descriptions, scale, and weight
-    const traits = Object.entries(parsed).map(([name, data]) => ({
-      name,
-      description: data.description,
-      scale: JSON.stringify(data.scale),
-      weight: data.weight || 0.2, // Default weight if not provided
-    }));
+    // 5. Parse the OpenAI response (which should be guaranteed JSON now)
+    console.log("[8] Attempting to parse OpenAI response as JSON...");
+    let traits;
+    try {
+      traits = JSON.parse(rawText);
 
-    return NextResponse.json({ traits }, { status: 200 });
-  } catch (err) {
-    console.error("Error parsing rubric:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+      // Validate that we got an object, as requested in the prompt
+      if (typeof traits !== 'object' || traits === null || Array.isArray(traits)) {
+         console.error("[!] Parsed result is not a JSON object. Received:", typeof traits, traits);
+         throw new Error("Expected a JSON object of traits, but received something else.");
+      }
+      console.log("[9] Parsed traits. Keys count:", Object.keys(traits).length); // Modified log
+
+    } catch (e) {
+      console.error("[!] Failed to parse GPT JSON response:", e);
+      // Log the raw text that failed parsing *only if* it's not excessively large or sensitive
+      if (rawText.length < 2000) { // Example length limit
+         console.error("[!] Problematic OpenAI response. Preview:", rawText.slice(0, 100)); // Modified log
+      } else {
+         console.error("[!] Problematic rawText from OpenAI is too long to log fully. Length:", rawText.length);
+      }
+      // This specific error message is what your Python script was receiving
+      return NextResponse.json({ error: "Invalid JSON format from GPT" }, { status: 500 });
+    }
+
+    // 6. Return the result
+    // The prompt asks for an object: { "TraitName": "definition..." }
+    // Your Python code seemed to expect {'traits': [{'name': ..., 'description': ...}]}
+    // Decide which format you need. Returning the object directly is simpler here:
+    console.log("[10] Traits extraction complete. Returning JSON."); // Modified log
+    return NextResponse.json(traits, { status: 200 });
+
+    /*
+    // --- OPTION B: If Python absolutely needs the array format ---
+    console.log("[10] Converting traits object to array and returning.");
+    try {
+        const traitsArray = Object.entries(traits).map(([name, description]) => ({ name, description }));
+        return NextResponse.json({ traits: traitsArray }, { status: 200 });
+    } catch (conversionError) {
+        console.error("[!] Error converting traits object to array:", conversionError);
+        return NextResponse.json({ error: "Server error converting traits to array" }, { status: 500 });
+    }
+    // --- End Option B ---
+    */
+
+  } catch (err) { // <<< OUTER CATCH BLOCK >>>
+    // This catches errors from req.json(), accessing body properties before validation, or other unexpected errors
+    console.error("[!] Error processing request in outer catch block:", err); // MODIFIED LOG
+    const errorMessage = err instanceof Error ? err.message : "Unknown server error";
+    return NextResponse.json({ error: `Server error during initial processing: ${errorMessage}` }, { status: 500 });
   }
 }
