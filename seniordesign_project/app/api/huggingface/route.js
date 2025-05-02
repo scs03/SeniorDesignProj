@@ -23,7 +23,7 @@ export async function POST(req) {
         });
 
         rawBody = await response.text();
-        if (response.status !== 503 && !rawBody.startsWith("&lt;!DOCTYPE html&gt;") && !rawBody.startsWith("<!DOCTYPE html>")) {
+        if (response.ok && !rawBody.startsWith("&lt;!DOCTYPE html&gt;") && !rawBody.startsWith("<!DOCTYPE html>")) {
           break;
         }
 
