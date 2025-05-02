@@ -59,21 +59,33 @@ class Mutation:
         if existing:
             if rubric_file and existing.rubric_file:
                 existing.rubric_file.delete()
+
+            if rubric_file:
+                filename = f"{class_id}_{name.replace(' ', '_')}_{rubric_file.name}"
+                relative_path = os.path.join("rubrics", filename)
+                saved_rubric_path = default_storage.save(relative_path, ContentFile(rubric_file.read()))
+                existing.rubric_file = saved_rubric_path
+
             existing.due_date = due_date
             existing.prompt = prompt
-            if rubric_file:
-                existing.rubric_file = rubric_file
             existing.save()
             return f"Assignment '{name}' updated successfully."
         else:
+            saved_rubric_path = None
+            if rubric_file:
+                filename = f"{class_id}_{name.replace(' ', '_')}_{rubric_file.name}"
+                relative_path = os.path.join("rubrics", filename)
+                saved_rubric_path = default_storage.save(relative_path, ContentFile(rubric_file.read()))
+
             Assignment.objects.create(
                 class_assigned=class_obj,
                 name=name,
                 due_date=due_date,
                 prompt=prompt,
-                rubric_file=rubric_file,
+                rubric_file=saved_rubric_path,
             )
             return f"Assignment '{name}' created successfully."
+
 
 
     @strawberry.mutation
@@ -117,8 +129,12 @@ class Mutation:
 
     @strawberry.mutation
     def submit_assignment(self, info: Info, assignment_id: int, submission_file: Upload) -> str:
+        print("DEBUG >> Backend hit: submit_assignment")
+        print("DEBUG >> File received:", submission_file.name)
         request = info.context.request
         user: CustomUser = request.user
+
+        print("DEBUG - got submission:", submission_file.name)
 
         if not user.is_authenticated or user.role != "student":
             raise Exception("Only students can submit assignments.")
@@ -164,6 +180,13 @@ class Mutation:
                 )
             except Exception as e:
                 print(f"Grading pipeline error: {e}")
+
+        submission = Submission.objects.create(
+        assignment=assignment,
+        student=user,
+        submission_file=relative_path,
+        )
+        print("✅ Submission saved to DB:", submission)
 
         return f"Submission uploaded successfully to {relative_path}"
 
