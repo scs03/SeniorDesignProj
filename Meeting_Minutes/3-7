@@ -1,0 +1,42 @@
+Meeting Notes
+Date: March 7th, 2025
+Attendees:
+
+Dr. Alagar
+Vikram Rohit Ramachandra
+Saumya Kapoor
+Sruti Karthikeyan
+Nihanth Attaluri
+Duration: ~45 minutes
+Platform: Microsoft Teams
+
+Progress Updates (Weekly Status Report)
+Vikram Rohit Ramachandra
+Made significant progress on integrating the frontend with the database to support login functionality using real user data. Collaborated closely with Saumya through pair programming sessions to align backend responses with frontend components.
+Next Steps: Finalize the login flow and ensure seamless data fetching and state management post-authentication.
+
+Saumya Kapoor
+Worked with Vikram on frontend-backend integration tasks, including refining API calls and UI state handling. Started drafting the architecture diagram to depict system modules and interactions clearly.
+Next Steps: Complete the authentication setup and polish the system architecture diagram for review.
+
+Nihanth Attaluri
+Continued exploring model training strategies and collaborated with Sruti on evaluating different approaches. Assisted in identifying performance bottlenecks and refining feature engineering for better outcomes.
+Next Steps: Finalize hyperparameter tuning and begin preparing for integration of the model with the API layer.
+
+Sruti Karthikeyan
+Preprocessed and tokenized essays using DistilRoBERTa. Initially attempted fine-tuning RoBERTa, but due to high memory usage, transitioned to the more lightweight DistilRoBERTa. Achieved promising results with an MSE of 0.0016 and a QWK score of 0.9022.
+Next Steps: Evaluate generalization by testing on unseen data and convert predicted outputs into meaningful grade values.
+
+To-Do List for This Week
+For Vikram & Saumya:
+
+Complete login and authentication logic using live data.
+Finalize and validate the frontend’s communication with the backend.
+For Sruti & Nihanth:
+
+Wrap up model training and conduct inference tests on new data.
+Start working on score denormalization for clearer interpretability.
+For Everyone:
+
+Sync frontend, backend, and AI components to ensure integration readiness.
+Begin drafting visuals and slides for the upcoming project milestone review.

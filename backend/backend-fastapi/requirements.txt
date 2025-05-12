@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+requests
+python-multipart
+pymupdf
+pytesseract
+uvicorn
+pdfplumber
+pdf2image
+opencv-python
+numpy
+python-multipart
+openai
+python-dotenv
+httpx==0.27.2
